@@ -38,7 +38,8 @@ function checkProjectQuality() {
     }
   });
 
-  console.log(`\nAudit Score: ${passed}/${criteria.length}`);
+  const totalCriteria = criteria.length + frontendCriteria.length;
+  console.log(`\nAudit Score: ${passed}/${totalCriteria}`);
 }
 
 checkProjectQuality();
