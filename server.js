@@ -9,6 +9,7 @@ const winston = require('winston');
 const { LoggingWinston } = require('@google-cloud/logging-winston');
 const { Storage } = require('@google-cloud/storage');
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+const { VertexAI } = require('@google-cloud/vertexai');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,17 +21,22 @@ const PORT = process.env.PORT || 8080;
 const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT || 'focused-outlook-495105-b7';
 
 // --- Logging Setup ---
-const loggingWinston = new LoggingWinston({
-  projectId: PROJECT_ID,
-  logName: 'agentic-collaboration-logs',
-});
+let loggingWinston;
+try {
+  loggingWinston = new LoggingWinston({
+    projectId: PROJECT_ID,
+    logName: 'agentic-collaboration-logs',
+  });
+} catch (e) {
+  console.warn('Could not initialize LoggingWinston:', e);
+}
 
 const logger = winston.createLogger({
   level: 'info',
   transports: [
     new winston.transports.Console(),
-    // Add Cloud Logging only if in production or credentials exist
-    ...(process.env.NODE_ENV === 'production' ? [loggingWinston] : []),
+    // Add Cloud Logging only if in production and it initialized successfully
+    ...(process.env.NODE_ENV === 'production' && loggingWinston ? [loggingWinston] : []),
   ],
 });
 
@@ -43,14 +49,34 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- GCP Cloud Storage ---
-const storage = new Storage({ projectId: PROJECT_ID });
+let storage, secretClient, vertexModel;
+
+try {
+  storage = new Storage({ projectId: PROJECT_ID });
+} catch(e) { logger.warn('Storage initialization failed:', e.message); }
 const bucketName = process.env.GCS_BUCKET || `${PROJECT_ID}-docs`;
 
 // --- GCP Secret Manager ---
-const secretClient = new SecretManagerServiceClient();
+try {
+  secretClient = new SecretManagerServiceClient();
+} catch(e) { logger.warn('SecretManager initialization failed:', e.message); }
+
+// --- Vertex AI Setup ---
+try {
+  const vertexAI = new VertexAI({
+    project: PROJECT_ID,
+    location: 'us-central1',
+  });
+  vertexModel = vertexAI.getGenerativeModel({
+    model: 'gemini-pro',
+  });
+} catch (e) {
+  logger.warn('Vertex AI initialization failed:', e.message);
+}
 
 async function getSecret(secretName) {
   try {
+    if (!secretClient) throw new Error("Secret client not initialized");
     const [version] = await secretClient.accessSecretVersion({
       name: `projects/${PROJECT_ID}/secrets/${secretName}/versions/latest`,
     });
@@ -110,8 +136,30 @@ app.post('/api/upload', async (req, res) => {
 // AI Task Suggestions
 app.get('/api/ai/suggest-tasks', async (req, res) => {
   logger.info('AI Task Suggestions requested');
-  
-  // Simulate AI extraction from chat history
+  if (vertexModel) {
+    try {
+      const prompt = 'Extract 2 concise actionable tasks from this context for a team collaboration tool. Format as a JSON array of objects with "text" and "priority" fields. Example: [{"text": "Review PR", "priority": "high"}]. Context: We need to finalize the Cloud Run deployment and setup the Titan Security Key.';
+      const result = await vertexModel.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }]
+      });
+      const textResponse = result.response.candidates[0].content.parts[0].text;
+      
+      // Attempt to parse JSON response
+      let parsedTasks;
+      try {
+        const jsonMatch = textResponse.match(/\[.*\]/s);
+        parsedTasks = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+      } catch (err) {}
+      
+      if (parsedTasks && Array.isArray(parsedTasks)) {
+        return res.json(parsedTasks);
+      }
+    } catch (err) {
+      logger.error('Vertex AI error:', err.message);
+    }
+  }
+
+  // Fallback
   setTimeout(() => {
     res.json([
       { text: 'Review PR for GCS integration', priority: 'high' },
@@ -119,14 +167,29 @@ app.get('/api/ai/suggest-tasks', async (req, res) => {
     ]);
   }, 800);
 });
+
 app.get('/api/ai/summarize', async (req, res) => {
   const channel = req.query.channel || 'general';
   logger.info(`AI Summary requested for #${channel}`);
   
-  // Simulate AI processing
+  if (vertexModel) {
+    try {
+      const result = await vertexModel.generateContent({
+        contents: [{ role: 'user', parts: [{ text: `Summarize the recent activity for the ${channel} channel.` }] }]
+      });
+      return res.json({ 
+        summary: result.response.candidates[0].content.parts[0].text,
+        confidence: 0.95
+      });
+    } catch (err) {
+      logger.error('Vertex AI error:', err.message);
+    }
+  }
+
+  // Fallback
   setTimeout(() => {
     res.json({ 
-      summary: `This is an AI-generated summary for #${channel}. Key topics: Project status, Cloud Run deployment, and Team synergy.`,
+      summary: `This is a fallback AI-generated summary for #${channel}. Key topics: Project status, Cloud Run deployment, and Team synergy.`,
       confidence: 0.98
     });
   }, 1000);
@@ -161,6 +224,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-server.listen(PORT, () => {
+// Global error handler to prevent crashes
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Robust Server running on port ${PORT}`);
 });
