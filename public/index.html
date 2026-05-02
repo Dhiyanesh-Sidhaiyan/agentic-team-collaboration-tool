@@ -1,148 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Colliq — AI-powered team collaboration workspace on Google Cloud" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Colliq — AI-powered team collaboration workspace on Google Cloud"/>
   <title>Colliq — Team Workspace</title>
   <style>
-    /* ── Reset & Variables ───────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --sb-bg:          #1a1d21;
-      --sb-hover:       #222529;
-      --sb-active:      rgba(255,255,255,0.12);
-      --sb-text:        #c9cacb;
-      --sb-muted:       #868587;
-      --brand:          #4a154b;
-      --brand-dark:     #350d36;
-      --blue:           #1264a3;
-      --blue-light:     #e8f4fd;
-      --green:          #2bac76;
-      --red:            #e01e5a;
-      --yellow:         #ecb22e;
-      --main-bg:        #ffffff;
-      --msg-hover:      #f8f8f8;
-      --border:         #e8e8e8;
-      --text-primary:   #1d1c1d;
-      --text-secondary: #616061;
-      --input-border:   #c7c7c7;
-      --input-focus:    #1264a3;
-      --shadow-sm:      0 1px 3px rgba(0,0,0,.1);
-      --shadow-md:      0 4px 16px rgba(0,0,0,.18);
-      --radius:         8px;
-      --font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --sb-bg: #1a1d21; --sb-hover: #222529; --sb-active: rgba(255,255,255,.12);
+      --sb-text: #c9cacb; --sb-muted: #868587;
+      --brand: #4a154b; --brand-dark: #350d36;
+      --blue: #1264a3; --blue-light: #e8f4fd; --blue-mid: #0d5091;
+      --green: #2bac76; --red: #e01e5a; --yellow: #b06000; --orange: #cc4400;
+      --main-bg: #fff; --msg-hover: #f8f8f8; --border: #e0e0e0;
+      --text: #1d1c1d; --muted: #616061; --input-border: #c7c7c7;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.1); --shadow-md: 0 4px 16px rgba(0,0,0,.18);
+      --radius: 8px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     html, body { height: 100%; overflow: hidden; background: var(--sb-bg); }
-    body { font-family: var(--font); font-size: 15px; line-height: 1.46; color: var(--text-primary); display: flex; flex-direction: column; }
+    body { font-family: var(--font); font-size: 15px; line-height: 1.46; color: var(--text); display: flex; flex-direction: column; }
 
-    /* ── Top Bar ─────────────────────────────────────────────── */
-    .topbar {
-      height: 40px; background: var(--brand-dark); display: flex;
-      align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; z-index: 10;
-    }
-    .topbar-logo { color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
-    .topbar-logo span { opacity: .7; font-weight: 400; font-size: 13px; }
-    .topbar-search { flex: 1; max-width: 520px; margin: 0 auto; }
-    .topbar-search input {
-      width: 100%; height: 28px; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.25);
-      border-radius: 6px; padding: 0 12px 0 30px; font-size: 13px; color: #fff; outline: none;
-    }
-    .topbar-search { position: relative; }
+    /* ── Top Bar ── */
+    .topbar { height: 40px; background: var(--brand-dark); display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; z-index: 10; }
+    .topbar-logo { color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -.5px; display: flex; align-items: center; gap: 6px; }
+    .topbar-logo em { opacity: .6; font-weight: 400; font-size: 12px; font-style: normal; }
+    .topbar-search { flex: 1; max-width: 520px; margin: 0 auto; position: relative; }
+    .topbar-search input { width: 100%; height: 28px; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 0 12px 0 30px; font-size: 13px; color: #fff; outline: none; }
     .topbar-search::before { content: '🔍'; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 12px; pointer-events: none; }
     .topbar-search input::placeholder { color: rgba(255,255,255,.55); }
-    .topbar-search input:focus { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.5); }
+    .topbar-search input:focus { background: rgba(255,255,255,.2); }
     .topbar-right { color: rgba(255,255,255,.6); font-size: 12px; white-space: nowrap; }
+    .search-results { position: absolute; top: 34px; left: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-md); z-index: 500; overflow: hidden; max-height: 400px; overflow-y: auto; }
+    .sr-sec { padding: 10px 14px 6px; }
+    .sr-sec h4 { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+    .sr-item { padding: 6px 0; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    .sr-item:last-child { border-bottom: none; }
+    .sr-item:hover { background: var(--blue-light); margin: 0 -14px; padding: 6px 14px; border-radius: 4px; }
+    .sr-ch { font-size: 11px; color: var(--muted); background: #f0f0f0; padding: 1px 5px; border-radius: 3px; flex-shrink: 0; }
+    .sr-text { font-size: 13px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── Workspace Layout ────────────────────────────────────── */
+    /* ── Layout ── */
     .workspace { display: flex; flex: 1; overflow: hidden; }
 
-    /* ── Sidebar ─────────────────────────────────────────────── */
+    /* ── Sidebar ── */
     .sidebar { width: 260px; min-width: 260px; background: var(--sb-bg); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
     .sb-scroll { flex: 1; overflow-y: auto; }
     .sb-scroll::-webkit-scrollbar { width: 4px; }
     .sb-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
-    .sb-section { padding: 16px 0 4px; }
-    .sb-section-label {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 4px 16px; font-size: 13px; font-weight: 700; color: var(--sb-text); cursor: pointer;
-      user-select: none; transition: color .15s;
-    }
-    .sb-section-label:hover { color: #fff; }
-    .add-btn {
-      width: 20px; height: 20px; border-radius: 50%; background: none; border: none;
-      color: var(--sb-muted); font-size: 18px; cursor: pointer; display: flex;
-      align-items: center; justify-content: center; line-height: 1; transition: all .15s;
-    }
+    .sb-sec { padding: 14px 0 4px; }
+    .sb-sec-label { display: flex; align-items: center; justify-content: space-between; padding: 3px 16px; font-size: 13px; font-weight: 700; color: var(--sb-text); cursor: pointer; user-select: none; transition: color .15s; }
+    .sb-sec-label:hover { color: #fff; }
+    .add-btn { width: 20px; height: 20px; border-radius: 50%; background: none; border: none; color: var(--sb-muted); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: all .15s; }
     .add-btn:hover { color: #fff; background: rgba(255,255,255,.1); }
-    .sb-item {
-      display: flex; align-items: center; gap: 7px; padding: 5px 16px; font-size: 14px;
-      color: var(--sb-text); cursor: pointer; border-radius: 6px; margin: 1px 8px;
-      transition: background .1s, color .1s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .sb-item { display: flex; align-items: center; gap: 7px; padding: 5px 16px; font-size: 14px; color: var(--sb-text); cursor: pointer; border-radius: 6px; margin: 1px 8px; transition: background .1s, color .1s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sb-item:hover { background: var(--sb-hover); color: #fff; }
     .sb-item.active { background: var(--sb-active); color: #fff; font-weight: 700; }
-    .sb-item:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
     .sb-hash { font-size: 15px; color: var(--sb-muted); flex-shrink: 0; }
-    .sb-item.active .sb-hash { color: rgba(255,255,255,.7); }
-    .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); margin-left: auto; flex-shrink: 0; }
+    .sb-item.active .sb-hash { color: rgba(255,255,255,.65); }
     .sb-avatar { width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; }
     .presence-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .presence-online  { background: var(--green); }
-    .presence-offline { background: var(--sb-muted); }
-
-    .sb-footer {
-      padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.08);
-      display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background .1s;
-    }
+    .p-online { background: var(--green); }
+    .sb-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background .1s; }
     .sb-footer:hover { background: var(--sb-hover); }
     .sb-user-name { color: #fff; font-weight: 700; font-size: 13px; }
     .sb-user-status { color: var(--sb-muted); font-size: 11px; }
 
-    /* ── Main Chat ───────────────────────────────────────────── */
+    /* ── Main Chat ── */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
-
-    .channel-header {
-      height: 49px; border-bottom: 1px solid var(--border); padding: 0 20px;
-      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-    }
-    .channel-header h2 { font-size: 15px; font-weight: 900; }
-    .ch-desc { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .ch-header { height: 49px; border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .ch-header h2 { font-size: 15px; font-weight: 900; }
+    .ch-desc { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
     .header-actions { display: flex; gap: 4px; flex-shrink: 0; }
-    .header-btn {
-      height: 28px; padding: 0 10px; border-radius: 4px; border: 1px solid var(--input-border);
-      background: #fff; font-size: 13px; cursor: pointer; color: var(--text-secondary);
-      display: flex; align-items: center; gap: 5px; transition: all .1s; white-space: nowrap;
-    }
-    .header-btn:hover { background: #f0f0f0; color: var(--text-primary); border-color: #aaa; }
-
-    .messages-wrap { flex: 1; overflow-y: auto; padding: 16px 20px 0; scroll-behavior: smooth; }
+    .hbtn { height: 28px; padding: 0 10px; border-radius: 4px; border: 1px solid var(--input-border); background: #fff; font-size: 13px; cursor: pointer; color: var(--muted); display: flex; align-items: center; gap: 5px; transition: all .1s; white-space: nowrap; }
+    .hbtn:hover { background: #f0f0f0; color: var(--text); border-color: #aaa; }
+    .messages-wrap { flex: 1; overflow-y: auto; padding: 16px 20px 0; }
     .messages-wrap::-webkit-scrollbar { width: 6px; }
     .messages-wrap::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 3px; }
-
-    .msg-day-divider {
-      display: flex; align-items: center; gap: 10px; padding: 16px 0 8px;
-      font-size: 12px; font-weight: 700; color: var(--text-secondary);
-    }
-    .msg-day-divider::before, .msg-day-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
-    .msg-row {
-      display: flex; gap: 10px; padding: 4px 8px; border-radius: 6px;
-      transition: background .1s; position: relative;
-    }
+    .day-divider { display: flex; align-items: center; gap: 10px; padding: 16px 0 8px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    .day-divider::before, .day-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .msg-row { display: flex; gap: 10px; padding: 4px 8px; border-radius: 6px; transition: background .1s; position: relative; }
     .msg-row:hover { background: var(--msg-hover); }
     .msg-row:hover .msg-actions { opacity: 1; }
-    .msg-avatar {
-      width: 36px; height: 36px; border-radius: 4px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 13px; color: #fff; margin-top: 2px;
-    }
+    .msg-avatar { width: 36px; height: 36px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #fff; margin-top: 2px; }
     .msg-body { flex: 1; min-width: 0; }
     .msg-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
     .msg-user { font-weight: 700; font-size: 15px; }
-    .msg-time { font-size: 12px; color: var(--text-secondary); }
+    .msg-time { font-size: 12px; color: var(--muted); }
+    .bot-badge { font-size: 10px; background: var(--brand); color: #fff; padding: 1px 5px; border-radius: 3px; font-weight: 700; }
     .msg-text { font-size: 15px; line-height: 1.46; word-break: break-word; }
     .msg-text code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 13px; color: #c0392b; }
     .msg-text strong { font-weight: 700; }
@@ -150,138 +95,107 @@
     .msg-text a { color: var(--blue); text-decoration: none; }
     .msg-text a:hover { text-decoration: underline; }
     .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-    .reaction-pill {
-      display: inline-flex; align-items: center; gap: 3px; background: #f0f0f0;
-      border: 1px solid var(--border); border-radius: 12px; padding: 2px 7px;
-      font-size: 12px; cursor: pointer; transition: all .1s;
-    }
-    .reaction-pill:hover { background: var(--blue-light); border-color: var(--blue); }
-    .msg-actions {
-      position: absolute; right: 8px; top: -14px; opacity: 0; background: #fff;
-      border: 1px solid var(--border); border-radius: 6px; display: flex;
-      box-shadow: var(--shadow-sm); transition: opacity .15s;
-    }
-    .react-btn {
-      width: 30px; height: 28px; border: none; background: none; cursor: pointer;
-      font-size: 13px; display: flex; align-items: center; justify-content: center;
-      border-radius: 5px; transition: background .1s; color: var(--text-secondary);
-    }
-    .react-btn:hover { background: #f0f0f0; }
+    .rpill { display: inline-flex; align-items: center; gap: 3px; background: #f0f0f0; border: 1px solid var(--border); border-radius: 12px; padding: 2px 7px; font-size: 12px; cursor: pointer; transition: all .1s; }
+    .rpill:hover { background: var(--blue-light); border-color: var(--blue); }
+    .msg-actions { position: absolute; right: 8px; top: -14px; opacity: 0; background: #fff; border: 1px solid var(--border); border-radius: 6px; display: flex; box-shadow: var(--shadow-sm); transition: opacity .15s; }
+    .rbtn { width: 30px; height: 28px; border: none; background: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; border-radius: 5px; transition: background .1s; }
+    .rbtn:hover { background: #f0f0f0; }
 
-    .typing-bar { height: 24px; padding: 0 28px; font-size: 12px; color: var(--text-secondary); font-style: italic; flex-shrink: 0; }
+    /* Doc Unfurl Card */
+    .doc-card { margin: 6px 0; border: 1px solid var(--border); border-left: 4px solid #4285f4; border-radius: 6px; padding: 10px 14px; background: #fafbff; display: flex; gap: 12px; align-items: flex-start; }
+    .doc-card-icon { font-size: 24px; flex-shrink: 0; }
+    .doc-card-body { flex: 1; min-width: 0; }
+    .doc-card-title { font-weight: 700; font-size: 14px; color: var(--blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+    .doc-card-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .doc-card-snippet { font-size: 12px; color: #444; font-style: italic; margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .doc-card-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .doc-pill { font-size: 11px; padding: 3px 9px; border-radius: 4px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 3px; }
+    .dp-open { background: var(--blue-light); color: var(--blue); }
+    .dp-open:hover { background: #c5dff5; }
+    .dp-ai { background: #f3e8f3; color: var(--brand); }
+    .dp-ai:hover { background: #e6d0e6; }
+    .dp-pin { background: #e8f5e9; color: #2e7d32; }
+    .dp-pin:hover { background: #c8e6c9; }
 
-    /* ── Composer ────────────────────────────────────────────── */
+    .typing-bar { height: 24px; padding: 0 28px; font-size: 12px; color: var(--muted); font-style: italic; flex-shrink: 0; }
+
+    /* ── Composer ── */
     .composer { padding: 0 20px 16px; flex-shrink: 0; }
     .composer-box { border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
-    .composer-box:focus-within { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(18,100,163,.15); }
+    .composer-box:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18,100,163,.15); }
     .composer-toolbar { display: flex; padding: 6px 10px; border-bottom: 1px solid var(--border); gap: 2px; }
-    .tool-btn {
-      width: 28px; height: 28px; border: none; background: none; border-radius: 4px;
-      cursor: pointer; font-size: 14px; color: var(--text-secondary); display: flex;
-      align-items: center; justify-content: center; transition: background .1s; font-family: var(--font);
-    }
-    .tool-btn:hover { background: #f0f0f0; color: var(--text-primary); }
-    .composer-input {
-      width: 100%; min-height: 44px; max-height: 140px; border: none; padding: 10px 14px;
-      font-size: 15px; font-family: var(--font); resize: none; outline: none; line-height: 1.46;
-      background: transparent;
-    }
+    .tbtn { width: 28px; height: 28px; border: none; background: none; border-radius: 4px; cursor: pointer; font-size: 14px; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: background .1s; font-family: var(--font); }
+    .tbtn:hover { background: #f0f0f0; color: var(--text); }
+    .composer-input { width: 100%; min-height: 44px; max-height: 140px; border: none; padding: 10px 14px; font-size: 15px; font-family: var(--font); resize: none; outline: none; line-height: 1.46; }
     .composer-footer { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-top: 1px solid var(--border); }
-    .composer-hint { font-size: 11px; color: var(--text-secondary); }
-    .send-btn {
-      height: 32px; padding: 0 18px; background: var(--blue); color: #fff; border: none;
-      border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: background .1s; display: flex; align-items: center; gap: 5px;
-    }
-    .send-btn:hover { background: #0d5091; }
-    .send-btn:disabled { background: #d0d0d0; cursor: not-allowed; }
+    .composer-hint { font-size: 11px; color: var(--muted); }
+    .send-btn { height: 32px; padding: 0 18px; background: var(--blue); color: #fff; border: none; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .1s; }
+    .send-btn:hover { background: var(--blue-mid); }
+    .send-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-    /* ── Status Bar ──────────────────────────────────────────── */
-    .status-bar {
-      padding: 2px 20px; font-size: 11px; color: var(--text-secondary);
-      background: #fafafa; border-top: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
-    }
-    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-    .status-dot.off { background: var(--red); }
+    /* ── Status Bar ── */
+    .status-bar { padding: 2px 20px; font-size: 11px; color: var(--muted); background: #fafafa; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .sdot.off { background: var(--red); }
 
-    /* ── Right Panel ─────────────────────────────────────────── */
-    .right-panel { width: 316px; min-width: 316px; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; background: #fff; }
-    .rp-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .rp-tab {
-      flex: 1; height: 42px; border: none; background: none; font-size: 13px; font-weight: 600;
-      color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent;
-      transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 4px;
-    }
+    /* ── Right Panel ── */
+    .right-panel { width: 320px; min-width: 320px; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+    .rp-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+    .rp-tabs::-webkit-scrollbar { display: none; }
+    .rp-tab { flex: 1; min-width: 58px; height: 40px; border: none; background: none; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; white-space: nowrap; padding: 0 6px; }
     .rp-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-    .rp-tab:hover:not(.active) { background: #f8f8f8; color: var(--text-primary); }
+    .rp-tab:hover:not(.active) { background: #f8f8f8; color: var(--text); }
     .rp-body { flex: 1; overflow-y: auto; padding: 16px; }
     .rp-body::-webkit-scrollbar { width: 5px; }
     .rp-body::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 3px; }
 
-    /* Tasks */
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .panel-header h3 { font-size: 14px; font-weight: 800; }
-    .btn-sm {
-      height: 28px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--input-border);
-      background: #fff; font-size: 13px; cursor: pointer; transition: all .1s; font-family: var(--font);
-    }
+    /* Shared panel styles */
+    .panel-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .panel-hdr h3 { font-size: 14px; font-weight: 800; }
+    .btn-sm { height: 28px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--input-border); background: #fff; font-size: 13px; cursor: pointer; transition: all .1s; font-family: var(--font); }
     .btn-sm:hover { background: #f0f0f0; }
     .btn-sm.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
-    .btn-sm.primary:hover { background: #0d5091; }
+    .btn-sm.primary:hover { background: var(--blue-mid); }
     .btn-sm.danger { color: var(--red); border-color: #fce8ef; background: #fce8ef; }
     .btn-sm.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+    .btn-sm.ghost { border-color: transparent; background: transparent; }
+    .btn-sm.ghost:hover { background: #f0f0f0; border-color: var(--border); }
 
+    /* Tasks */
     .task-input-row { display: flex; gap: 6px; margin-bottom: 14px; }
-    .task-input-row input {
-      flex: 1; height: 32px; border: 1px solid var(--input-border); border-radius: 4px;
-      padding: 0 10px; font-size: 13px; outline: none; font-family: var(--font);
-    }
-    .task-input-row input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 2px rgba(18,100,163,.12); }
-
-    .task-col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-secondary); margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
-    .task-count { background: #f0f0f0; padding: 1px 6px; border-radius: 10px; font-size: 10px; }
-    .task-card {
-      background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px;
-      margin-bottom: 7px; cursor: pointer; transition: all .15s;
-    }
-    .task-card:hover { box-shadow: var(--shadow-sm); border-color: #c0c0c0; }
-    .task-text { font-size: 14px; font-weight: 500; margin-bottom: 7px; line-height: 1.4; }
-    .task-footer { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-    .priority-badge { font-size: 11px; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+    .task-input-row input { flex: 1; height: 32px; border: 1px solid var(--input-border); border-radius: 4px; padding: 0 10px; font-size: 13px; outline: none; font-family: var(--font); }
+    .task-input-row input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(18,100,163,.12); }
+    .tcol-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
+    .tcnt { background: #f0f0f0; padding: 1px 6px; border-radius: 10px; font-size: 10px; }
+    .tcard { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 7px; transition: all .15s; }
+    .tcard:hover { box-shadow: var(--shadow-sm); border-color: #bbb; }
+    .tcard-text { font-size: 14px; font-weight: 500; margin-bottom: 7px; line-height: 1.4; }
+    .tcard-foot { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .pbadge { font-size: 11px; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
     .p-high   { background: #fce8ef; color: var(--red); }
-    .p-medium { background: #fff8e1; color: #b06000; }
+    .p-medium { background: #fff8e1; color: var(--yellow); }
     .p-low    { background: #e8f5e9; color: #2e7d32; }
-    .task-assignee { font-size: 11px; color: var(--text-secondary); margin-left: auto; }
-    .task-btns { display: flex; gap: 4px; margin-top: 8px; }
+    .tcard-assign { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .tcard-btns { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
 
     /* AI Panel */
-    .ai-banner {
-      background: linear-gradient(135deg, #4a154b 0%, #1264a3 100%);
-      border-radius: 8px; padding: 14px 16px; color: #fff; margin-bottom: 14px;
-    }
+    .ai-banner { background: linear-gradient(135deg,#4a154b 0%,#1264a3 100%); border-radius: 8px; padding: 14px 16px; color: #fff; margin-bottom: 14px; }
     .ai-banner h3 { font-size: 14px; font-weight: 800; margin-bottom: 3px; }
     .ai-banner p { font-size: 12px; opacity: .85; }
-    .ai-btn {
-      width: 100%; padding: 11px 14px; margin-bottom: 7px; border: 1px solid var(--border);
-      border-radius: 6px; background: #fff; font-size: 14px; cursor: pointer;
-      text-align: left; transition: all .15s; display: flex; align-items: center;
-      gap: 10px; font-family: var(--font);
-    }
+    .ai-btn { width: 100%; padding: 10px 14px; margin-bottom: 7px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-size: 14px; cursor: pointer; text-align: left; transition: all .15s; display: flex; align-items: center; gap: 10px; font-family: var(--font); }
     .ai-btn:hover { background: var(--blue-light); border-color: var(--blue); }
     .ai-btn-icon { font-size: 20px; flex-shrink: 0; }
-    .ai-btn-body { flex: 1; }
     .ai-btn-title { font-weight: 600; font-size: 14px; }
-    .ai-btn-desc { font-size: 11px; color: var(--text-secondary); }
+    .ai-btn-desc { font-size: 11px; color: var(--muted); }
     .ai-result { background: #f8f9fa; border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-size: 13px; line-height: 1.5; margin-top: 12px; }
-    .ai-result h4 { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .4px; }
-    .ai-suggestion { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .ai-suggestion:last-child { border-bottom: none; padding-bottom: 0; }
-    .ai-suggestion-text { flex: 1; }
-    .ai-suggestion-title { font-size: 13px; font-weight: 500; }
-    .ai-suggestion-src { font-size: 11px; color: var(--text-secondary); }
-    .ai-stat { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
-    .ai-chip { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2px 8px; font-size: 11px; color: var(--text-secondary); }
+    .ai-result h4 { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .4px; }
+    .ai-sug { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .ai-sug:last-child { border-bottom: none; }
+    .ai-sug-text { flex: 1; }
+    .ai-sug-title { font-size: 13px; font-weight: 500; }
+    .ai-sug-src { font-size: 11px; color: var(--muted); }
+    .ai-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .ai-chip { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 2px 8px; font-size: 11px; color: var(--muted); }
 
     /* Files Panel */
     .file-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
@@ -289,47 +203,94 @@
     .file-icon { font-size: 26px; flex-shrink: 0; }
     .file-info { flex: 1; min-width: 0; }
     .file-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--blue); }
-    .file-meta { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
-    .file-dl { font-size: 11px; padding: 3px 8px; }
+    .file-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    /* ── Docs Panel ── */
+    .doc-list-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; align-items: flex-start; transition: background .1s; }
+    .doc-list-item:last-child { border-bottom: none; }
+    .doc-list-item:hover { background: #f8f8f8; margin: 0 -16px; padding: 10px 16px; }
+    .doc-list-item.selected { background: var(--blue-light); margin: 0 -16px; padding: 10px 16px; }
+    .doc-list-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .doc-list-info { flex: 1; min-width: 0; }
+    .doc-list-title { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .doc-list-meta { font-size: 11px; color: var(--muted); }
+    .doc-embed-wrap { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 12px; background: #f5f5f5; }
+    .doc-embed-hdr { padding: 8px 12px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .doc-embed-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .doc-embed-wrap iframe { width: 100%; height: 380px; border: none; display: block; }
+    .doc-url-input { width: 100%; height: 32px; border: 1px solid var(--input-border); border-radius: 4px; padding: 0 10px; font-size: 13px; outline: none; font-family: var(--font); margin-bottom: 8px; }
+    .doc-url-input:focus { border-color: var(--blue); }
+    .doc-summary-box { background: var(--blue-light); border: 1px solid #c5dff5; border-radius: 6px; padding: 12px; font-size: 13px; line-height: 1.5; margin-top: 10px; }
+    .doc-summary-box h4 { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .3px; }
+
+    /* ── Workflows Panel ── */
+    .wf-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; transition: all .15s; }
+    .wf-card:hover { box-shadow: var(--shadow-sm); }
+    .wf-card-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .wf-name { font-size: 14px; font-weight: 700; flex: 1; }
+    .wf-status { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 700; flex-shrink: 0; }
+    .wf-on  { background: #e8f5e9; color: #2e7d32; }
+    .wf-off { background: #f0f0f0; color: var(--muted); }
+    .wf-trigger { font-size: 12px; color: var(--muted); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+    .wf-actions-line { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .wf-action-chip { font-size: 11px; background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+    .wf-arrow { color: #bbb; font-size: 12px; }
+    .wf-footer { display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+    .run-history { margin-top: 6px; }
+    .run-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); padding: 3px 0; }
+    .run-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .run-success { background: var(--green); }
+    .run-error   { background: var(--red); }
+    .run-skip    { background: #ccc; }
+
+    /* Toggle switch */
+    .toggle { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: #ccc; border-radius: 9px; cursor: pointer; transition: background .2s; }
+    .toggle input:checked + .toggle-slider { background: var(--green); }
+    .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px; background: #fff; border-radius: 50%; transition: transform .2s; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(14px); }
+
+    /* ── Create Workflow Modal ── */
+    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+    .modal { background: #fff; border-radius: 10px; width: 560px; max-width: 97vw; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-md); }
+    .modal-hdr { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-hdr h3 { font-size: 18px; font-weight: 900; margin-bottom: 3px; }
+    .modal-hdr p { font-size: 13px; color: var(--muted); }
+    .modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .modal-ftr { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px; }
+    .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--input-border); border-radius: 6px; padding: 8px 12px; font-size: 14px; outline: none; font-family: var(--font); }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(18,100,163,.12); }
+    .field textarea { resize: vertical; min-height: 60px; }
+    .trigger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .trigger-opt { border: 2px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; transition: all .15s; text-align: center; }
+    .trigger-opt:hover { border-color: var(--blue); background: var(--blue-light); }
+    .trigger-opt.selected { border-color: var(--blue); background: var(--blue-light); }
+    .trigger-opt .to-icon { font-size: 22px; margin-bottom: 4px; }
+    .trigger-opt .to-label { font-size: 13px; font-weight: 700; }
+    .trigger-opt .to-desc { font-size: 11px; color: var(--muted); }
+    .actions-builder { display: flex; flex-direction: column; gap: 8px; }
+    .action-row { border: 1px solid var(--border); border-radius: 6px; padding: 12px; background: #fafafa; position: relative; }
+    .action-row-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .action-type-label { font-size: 12px; font-weight: 700; background: #f0f0f0; padding: 2px 8px; border-radius: 3px; }
+    .action-remove { margin-left: auto; width: 22px; height: 22px; border: none; background: none; cursor: pointer; font-size: 16px; color: var(--muted); display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+    .action-remove:hover { background: #fce8ef; color: var(--red); }
+    .add-action-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Channel modal */
+    .ch-modal { background: #fff; border-radius: 10px; padding: 28px; width: 460px; max-width: 95vw; box-shadow: var(--shadow-md); }
+    .ch-modal h3 { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+    .ch-modal p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .ch-modal .field { margin-bottom: 12px; }
+    .ch-modal .field input { height: 38px; }
+    .ch-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
     /* Toasts */
     .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-    .toast {
-      background: #1d1c1d; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 13px;
-      box-shadow: var(--shadow-md); animation: toastIn .2s ease; pointer-events: auto; max-width: 300px;
-    }
-    @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    /* Modal */
-    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-    .modal { background: #fff; border-radius: 10px; padding: 28px; width: 460px; max-width: 95vw; box-shadow: var(--shadow-md); }
-    .modal h3 { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
-    .modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
-    .modal-field { margin-bottom: 12px; }
-    .modal-field label { display: block; font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px; }
-    .modal-field input {
-      width: 100%; height: 38px; border: 1px solid var(--input-border); border-radius: 6px;
-      padding: 0 12px; font-size: 15px; outline: none; font-family: var(--font);
-    }
-    .modal-field input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 2px rgba(18,100,163,.12); }
-    .modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-
-    /* Search results overlay */
-    .search-results {
-      position: absolute; top: 44px; left: 50%; transform: translateX(-50%);
-      width: 560px; max-width: 90vw; background: #fff; border: 1px solid var(--border);
-      border-radius: 8px; box-shadow: var(--shadow-md); z-index: 500; overflow: hidden;
-    }
-    .sr-section { padding: 12px 16px 8px; }
-    .sr-section h4 { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
-    .sr-item { padding: 8px 0; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-start; }
-    .sr-item:last-child { border-bottom: none; }
-    .sr-item:hover { background: var(--blue-light); margin: 0 -16px; padding: 8px 16px; }
-    .sr-ch { font-size: 11px; color: var(--text-secondary); background: #f0f0f0; padding: 1px 5px; border-radius: 3px; }
-    .sr-text { font-size: 13px; flex: 1; }
-    .sr-user { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
-
-    /* Utilities */
+    .toast { background: #1d1c1d; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 13px; box-shadow: var(--shadow-md); animation: tin .2s ease; pointer-events: auto; max-width: 300px; }
+    @keyframes tin { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -337,30 +298,28 @@
 
 <!-- Top Bar -->
 <div class="topbar" role="banner">
-  <div class="topbar-logo">⚡ Colliq <span>on GCP</span></div>
-  <div class="topbar-search" style="position:relative">
-    <input type="search" id="globalSearch" placeholder="Search messages, tasks, files…" aria-label="Search workspace" autocomplete="off" />
+  <div class="topbar-logo">⚡ Colliq <em>on GCP</em></div>
+  <div class="topbar-search">
+    <input type="search" id="globalSearch" placeholder="Search messages, tasks, docs…" aria-label="Search workspace" autocomplete="off"/>
     <div class="search-results hidden" id="searchResults"></div>
   </div>
-  <div class="topbar-right" id="topbarStatus">v2.0 · GCP</div>
+  <div class="topbar-right" id="topStatus">v2.1 · GCP</div>
 </div>
 
-<!-- Workspace -->
 <div class="workspace">
-
   <!-- Sidebar -->
   <nav class="sidebar" role="navigation" aria-label="Workspace navigation">
     <div class="sb-scroll">
-      <div class="sb-section">
-        <div class="sb-section-label" aria-label="Channels section">
+      <div class="sb-sec">
+        <div class="sb-sec-label">
           <span>Channels</span>
-          <button class="add-btn" onclick="openNewChannelModal()" title="Create channel" aria-label="Create new channel">+</button>
+          <button class="add-btn" onclick="openChModal()" title="Create channel" aria-label="Create channel">+</button>
         </div>
-        <div id="channelList" role="list" aria-label="Channel list"></div>
+        <div id="channelList" role="list"></div>
       </div>
-      <div class="sb-section">
-        <div class="sb-section-label"><span>Online Now</span></div>
-        <div id="presenceList" role="list" aria-label="Online users"></div>
+      <div class="sb-sec">
+        <div class="sb-sec-label"><span>Online Now</span></div>
+        <div id="presenceList" role="list"></div>
       </div>
     </div>
     <div class="sb-footer" role="button" tabindex="0" aria-label="Your profile">
@@ -374,19 +333,20 @@
 
   <!-- Main Chat -->
   <main class="main" role="main">
-    <header class="channel-header">
+    <header class="ch-header">
       <span class="sb-hash" aria-hidden="true">#</span>
       <h2 id="chName">general</h2>
       <span class="ch-desc" id="chDesc">Company-wide announcements</span>
       <div class="header-actions">
-        <button class="header-btn" onclick="doAiSummarize()" aria-label="AI summarize this channel">🤖 AI Summary</button>
-        <button class="header-btn" onclick="switchPanel('files')" aria-label="View shared files">📎 Files</button>
-        <button class="header-btn" onclick="switchPanel('tasks')" aria-label="View tasks">📋 Tasks</button>
+        <button class="hbtn" onclick="doAiSummarize()">🤖 AI Summary</button>
+        <button class="hbtn" onclick="switchPanel('docs')">📄 Docs</button>
+        <button class="hbtn" onclick="switchPanel('files')">📎 Files</button>
+        <button class="hbtn" onclick="switchPanel('flows')">⚙️ Flows</button>
       </div>
     </header>
 
     <div class="messages-wrap" id="messagesWrap" role="log" aria-label="Messages" aria-live="polite">
-      <div class="msg-day-divider">Today</div>
+      <div class="day-divider">Today</div>
       <div id="messagesList"></div>
     </div>
 
@@ -394,29 +354,24 @@
 
     <div class="composer">
       <div class="composer-box">
-        <div class="composer-toolbar" role="toolbar" aria-label="Formatting options">
-          <button class="tool-btn" title="Bold" aria-label="Bold" onclick="wrapText('**')"><b>B</b></button>
-          <button class="tool-btn" title="Italic" aria-label="Italic" onclick="wrapText('*')"><i>I</i></button>
-          <button class="tool-btn" title="Code" aria-label="Inline code" onclick="wrapText('`')"><code style="font-size:11px">{ }</code></button>
-          <button class="tool-btn" title="Attach file" aria-label="Attach file" onclick="simulateUpload()">📎</button>
-          <button class="tool-btn" title="Add emoji" aria-label="Add emoji" onclick="insertEmoji()">😊</button>
-          <button class="tool-btn" title="GIF" aria-label="Add GIF" style="font-size:11px;font-weight:700">GIF</button>
+        <div class="composer-toolbar" role="toolbar" aria-label="Message formatting">
+          <button class="tbtn" title="Bold"        onclick="wrapText('**')"><b>B</b></button>
+          <button class="tbtn" title="Italic"      onclick="wrapText('*')"><i>I</i></button>
+          <button class="tbtn" title="Code"        onclick="wrapText('`')"><code style="font-size:11px">{ }</code></button>
+          <button class="tbtn" title="Attach file" onclick="simulateUpload()">📎</button>
+          <button class="tbtn" title="Emoji"       onclick="insertEmoji()">😊</button>
+          <button class="tbtn" title="Link Google Doc" onclick="promptDocUrl()" style="font-size:11px;font-weight:700">Doc</button>
         </div>
-        <textarea
-          id="msgInput" class="composer-input"
-          placeholder="Message #general"
-          aria-label="Compose a message"
-          rows="1"
-        ></textarea>
+        <textarea id="msgInput" class="composer-input" placeholder="Message #general" aria-label="Compose a message" rows="1"></textarea>
         <div class="composer-footer">
           <span class="composer-hint">Enter to send · Shift+Enter for new line</span>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">Send ↵</button>
+          <button class="send-btn" onclick="sendMessage()" aria-label="Send message">Send ↵</button>
         </div>
       </div>
     </div>
 
     <div class="status-bar">
-      <div class="status-dot" id="sDot"></div>
+      <div class="sdot" id="sDot"></div>
       <span id="sText">Connecting…</span>
     </div>
   </main>
@@ -424,19 +379,18 @@
   <!-- Right Panel -->
   <aside class="right-panel" role="complementary" aria-label="Workspace tools">
     <div class="rp-tabs" role="tablist">
-      <button class="rp-tab active" id="tab-tasks" role="tab" aria-selected="true"  onclick="switchPanel('tasks')">📋 Tasks</button>
-      <button class="rp-tab"        id="tab-ai"    role="tab" aria-selected="false" onclick="switchPanel('ai')">🤖 AI</button>
-      <button class="rp-tab"        id="tab-files" role="tab" aria-selected="false" onclick="switchPanel('files')">📎 Files</button>
+      <button class="rp-tab active" id="tab-tasks"  role="tab" aria-selected="true"  onclick="switchPanel('tasks')">📋 Tasks</button>
+      <button class="rp-tab"        id="tab-ai"     role="tab" aria-selected="false" onclick="switchPanel('ai')">🤖 AI</button>
+      <button class="rp-tab"        id="tab-docs"   role="tab" aria-selected="false" onclick="switchPanel('docs')">📄 Docs</button>
+      <button class="rp-tab"        id="tab-files"  role="tab" aria-selected="false" onclick="switchPanel('files')">📎 Files</button>
+      <button class="rp-tab"        id="tab-flows"  role="tab" aria-selected="false" onclick="switchPanel('flows')">⚙️ Flows</button>
     </div>
 
     <!-- Tasks -->
     <div class="rp-body" id="panel-tasks">
-      <div class="panel-header">
-        <h3>Task Board</h3>
-        <button class="btn-sm primary" onclick="toggleTaskInput()">+ New Task</button>
-      </div>
+      <div class="panel-hdr"><h3>Task Board</h3><button class="btn-sm primary" onclick="toggleTaskInput()">+ New Task</button></div>
       <div class="task-input-row hidden" id="taskInputRow">
-        <input type="text" id="taskInput" placeholder="Describe the task…" aria-label="New task description" />
+        <input type="text" id="taskInput" placeholder="Describe the task…" aria-label="New task"/>
         <button class="btn-sm primary" onclick="createTask()">Add</button>
       </div>
       <div id="taskBoard"></div>
@@ -444,567 +398,740 @@
 
     <!-- AI -->
     <div class="rp-body hidden" id="panel-ai">
-      <div class="ai-banner">
-        <h3>🤖 Colliq AI Assistant</h3>
-        <p>Powered by Google Cloud · Real-time workspace intelligence</p>
-      </div>
-      <button class="ai-btn" onclick="doAiSuggest()">
-        <span class="ai-btn-icon">✨</span>
-        <div class="ai-btn-body">
-          <div class="ai-btn-title">Extract Action Items</div>
-          <div class="ai-btn-desc">Scan recent messages for tasks</div>
-        </div>
-      </button>
-      <button class="ai-btn" onclick="doAiSummarize()">
-        <span class="ai-btn-icon">📝</span>
-        <div class="ai-btn-body">
-          <div class="ai-btn-title">Summarize Channel</div>
-          <div class="ai-btn-desc">Get an AI digest of this channel</div>
-        </div>
-      </button>
-      <button class="ai-btn" onclick="doAiExtract()">
-        <span class="ai-btn-icon">🎯</span>
-        <div class="ai-btn-body">
-          <div class="ai-btn-title">Find Hidden TODOs</div>
-          <div class="ai-btn-desc">Implicit tasks buried in chat</div>
-        </div>
-      </button>
+      <div class="ai-banner"><h3>🤖 Colliq AI</h3><p>Powered by Google Cloud · Real-time workspace intelligence</p></div>
+      <button class="ai-btn" onclick="doAiSuggest()"><span class="ai-btn-icon">✨</span><div><div class="ai-btn-title">Extract Action Items</div><div class="ai-btn-desc">Scan recent messages for tasks</div></div></button>
+      <button class="ai-btn" onclick="doAiSummarize()"><span class="ai-btn-icon">📝</span><div><div class="ai-btn-title">Summarise Channel</div><div class="ai-btn-desc">AI digest of the current channel</div></div></button>
+      <button class="ai-btn" onclick="doAiExtract()"><span class="ai-btn-icon">🎯</span><div><div class="ai-btn-title">Find Hidden TODOs</div><div class="ai-btn-desc">Implicit tasks buried in chat</div></div></button>
       <div id="aiResult"></div>
+    </div>
+
+    <!-- Docs -->
+    <div class="rp-body hidden" id="panel-docs">
+      <div class="panel-hdr"><h3>Google Docs</h3><button class="btn-sm primary" onclick="toggleDocInput()">+ Link Doc</button></div>
+      <div id="docInputArea" class="hidden" style="margin-bottom:12px">
+        <input type="url" class="doc-url-input" id="docUrlInput" placeholder="Paste Google Docs URL…" aria-label="Google Docs URL"/>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm primary" onclick="previewDocUrl()" style="flex:1">Preview</button>
+          <button class="btn-sm" onclick="toggleDocInput()">Cancel</button>
+        </div>
+      </div>
+      <div id="docsList"></div>
+      <div id="docEmbedArea"></div>
+      <div id="docSummaryArea"></div>
     </div>
 
     <!-- Files -->
     <div class="rp-body hidden" id="panel-files">
-      <div class="panel-header">
-        <h3>Shared Files</h3>
-        <button class="btn-sm primary" onclick="simulateUpload()">↑ Upload</button>
-      </div>
+      <div class="panel-hdr"><h3>Shared Files</h3><button class="btn-sm primary" onclick="simulateUpload()">↑ Upload</button></div>
       <div id="filesList"></div>
     </div>
-  </aside>
 
-</div><!-- /workspace -->
+    <!-- Workflows -->
+    <div class="rp-body hidden" id="panel-flows">
+      <div class="panel-hdr"><h3>Workflows</h3><button class="btn-sm primary" onclick="openWfModal()">+ New</button></div>
+      <div id="workflowList"></div>
+    </div>
+  </aside>
+</div>
 
 <!-- Toasts -->
 <div class="toast-wrap" id="toastWrap" aria-live="assertive"></div>
 
-<!-- New Channel Modal -->
-<div class="modal-bg hidden" id="channelModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
-    <h3 id="modalTitle">Create a Channel</h3>
+<!-- Channel Modal -->
+<div class="modal-bg hidden" id="chModal" role="dialog" aria-modal="true" aria-labelledby="chModalTitle">
+  <div class="ch-modal">
+    <h3 id="chModalTitle">Create a Channel</h3>
     <p>Channels are where your team communicates around a topic.</p>
-    <div class="modal-field">
-      <label for="newChName">Channel name</label>
-      <input type="text" id="newChName" placeholder="e.g. project-phoenix" maxlength="80" aria-label="Channel name" />
+    <div class="field"><label for="newChName">Name</label><input type="text" id="newChName" placeholder="e.g. project-phoenix" maxlength="80"/></div>
+    <div class="field"><label for="newChDesc">Description <span style="font-weight:400">(optional)</span></label><input type="text" id="newChDesc" placeholder="What's this channel about?" maxlength="250"/></div>
+    <div class="ch-modal-btns">
+      <button class="btn-sm" onclick="closeChModal()">Cancel</button>
+      <button class="btn-sm primary" onclick="createChannel()">Create</button>
     </div>
-    <div class="modal-field">
-      <label for="newChDesc">Description <span style="font-weight:400">(optional)</span></label>
-      <input type="text" id="newChDesc" placeholder="What's this channel about?" maxlength="250" aria-label="Channel description" />
+  </div>
+</div>
+
+<!-- Workflow Builder Modal -->
+<div class="modal-bg hidden" id="wfModal" role="dialog" aria-modal="true" aria-labelledby="wfModalTitle">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="wfModalTitle">Create Workflow</h3>
+      <p>Automate repetitive tasks with triggers, conditions, and actions.</p>
     </div>
-    <div class="modal-btns">
-      <button class="btn-sm" onclick="closeModal()">Cancel</button>
-      <button class="btn-sm primary" onclick="createChannel()">Create Channel</button>
+    <div class="modal-body">
+      <div class="field">
+        <label for="wfName">Workflow Name</label>
+        <input type="text" id="wfName" placeholder="e.g. Daily Standup Digest"/>
+      </div>
+      <div class="field">
+        <label>Trigger — When this happens…</label>
+        <div class="trigger-grid" id="triggerGrid">
+          <div class="trigger-opt selected" data-type="message-keyword" onclick="selectTrigger(this)">
+            <div class="to-icon">💬</div>
+            <div class="to-label">Message Keyword</div>
+            <div class="to-desc">Message contains a word</div>
+          </div>
+          <div class="trigger-opt" data-type="task-completed" onclick="selectTrigger(this)">
+            <div class="to-icon">✅</div>
+            <div class="to-label">Task Done</div>
+            <div class="to-desc">A task is marked complete</div>
+          </div>
+          <div class="trigger-opt" data-type="schedule" onclick="selectTrigger(this)">
+            <div class="to-icon">⏰</div>
+            <div class="to-label">Schedule</div>
+            <div class="to-desc">Run on a cron schedule</div>
+          </div>
+          <div class="trigger-opt" data-type="doc-shared" onclick="selectTrigger(this)">
+            <div class="to-icon">📄</div>
+            <div class="to-label">Doc Shared</div>
+            <div class="to-desc">A Google Doc is linked</div>
+          </div>
+        </div>
+      </div>
+      <div class="field" id="triggerConfigArea">
+        <label id="triggerConfigLabel">Keyword to match</label>
+        <input type="text" id="triggerConfig" placeholder="e.g. urgent, deploy, help…"/>
+      </div>
+      <div class="field">
+        <label>Actions — …do this</label>
+        <div class="actions-builder" id="actionsBuilder"></div>
+        <div class="add-action-row" style="margin-top:8px">
+          <button class="btn-sm ghost" onclick="addAction('post-message')">+ Post Message</button>
+          <button class="btn-sm ghost" onclick="addAction('create-task')">+ Create Task</button>
+          <button class="btn-sm ghost" onclick="addAction('ai-summary')">+ AI Summary</button>
+          <button class="btn-sm ghost" onclick="addAction('webhook')">+ Webhook</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-sm" onclick="closeWfModal()">Cancel</button>
+      <button class="btn-sm primary" onclick="saveWorkflow()">Save Workflow</button>
     </div>
   </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-// ── State ─────────────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────────────────
 const S = {
-  channel:    'general',
-  panel:      'tasks',
-  socket:     null,
-  connected:  false,
-  channels:   [],
-  tasks:      [],
-  files:      [],
-  me:         pickName(),
-  typingTimer: null,
+  channel: 'general', panel: 'tasks', socket: null, connected: false,
+  channels: [], tasks: [], files: [], docs: {}, workflows: [],
+  me: pickName(), typingTimer: null, wfActions: [], wfTriggerType: 'message-keyword',
+  selectedDocId: null,
 };
 
-const AVATAR_COLORS = ['#611f69','#1264a3','#007a5a','#e01e5a','#b06000','#cc4400','#0d7377'];
-
-function pickName() {
-  const names = ['Alex Kim','Jordan Lee','Sam Rivera','Casey Morgan','Taylor Wu','Morgan Chen'];
-  return names[Math.floor(Math.random() * names.length)];
-}
+const AV_COLORS = ['#611f69','#1264a3','#007a5a','#e01e5a','#b06000','#cc4400','#0d7377','#1a5276'];
+function pickName() { return ['Alex Kim','Jordan Lee','Sam Rivera','Casey Morgan','Taylor Wu','Morgan Chen'][Math.floor(Math.random()*6)]; }
 function initials(n) { return String(n).split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
-function avatarColor(n) {
-  let h = 0; for (const c of n) h = c.charCodeAt(0) + ((h<<5)-h);
-  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
-}
+function avColor(n) { let h=0; for(const c of n) h=c.charCodeAt(0)+((h<<5)-h); return AV_COLORS[Math.abs(h)%AV_COLORS.length]; }
 function fmtTime(iso) { return new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtMsg(raw) {
-  return esc(raw)
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtMsg(t) {
+  return esc(t)
     .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g,'<em>$1</em>')
     .replace(/`([^`]+)`/g,'<code>$1</code>')
-    .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+    .replace(/(https?:\/\/[^\s<"]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
 }
+function isGoogleDocUrl(u) { return /docs\.google\.com\/document\/d\//.test(u); }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
+// ── Toast ──────────────────────────────────────────────────────────────────────
 function toast(msg, ms=3200) {
-  const w = document.getElementById('toastWrap');
-  const el = document.createElement('div');
-  el.className = 'toast'; el.textContent = msg;
-  w.appendChild(el);
-  setTimeout(() => el.remove(), ms);
+  const w=document.getElementById('toastWrap'), el=document.createElement('div');
+  el.className='toast'; el.textContent=msg; w.appendChild(el);
+  setTimeout(()=>el.remove(), ms);
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
+// ── API ────────────────────────────────────────────────────────────────────────
 async function api(url, opts={}) {
   const r = await fetch(url, { headers:{'Content-Type':'application/json'}, ...opts });
   if (!r.ok) throw new Error(r.status);
   return r.json();
 }
 
-// ── Socket.io ─────────────────────────────────────────────────────────────────
+// ── Socket ─────────────────────────────────────────────────────────────────────
 function initSocket() {
-  S.socket = io({ transports: ['websocket','polling'] });
-
+  S.socket = io({ transports:['websocket','polling'] });
   S.socket.on('connect', () => {
-    S.connected = true;
-    updateStatus(true);
-    S.socket.emit('user-join', { name: S.me, avatar: initials(S.me) });
+    S.connected=true; updateStatus(true);
+    S.socket.emit('user-join',{ name:S.me, avatar:initials(S.me) });
     S.socket.emit('join-channel', S.channel);
-    toast(`Connected as ${S.me}`);
+    toast('Connected as '+S.me);
   });
+  S.socket.on('disconnect', () => { S.connected=false; updateStatus(false); });
 
-  S.socket.on('disconnect', () => { S.connected = false; updateStatus(false); });
-
-  S.socket.on('new-message', msg => {
-    appendMsg(msg);
-    scrollBottom();
-  });
+  S.socket.on('new-message', msg => { appendMsg(msg); scrollBottom(); });
 
   S.socket.on('typing', ({user}) => {
-    if (user !== S.me) {
-      document.getElementById('typingBar').textContent = `${user} is typing…`;
+    if (user!==S.me) {
+      document.getElementById('typingBar').textContent = user+' is typing…';
       clearTimeout(S.typingTimer);
-      S.typingTimer = setTimeout(() => { document.getElementById('typingBar').textContent = ''; }, 3000);
+      S.typingTimer = setTimeout(()=>{ document.getElementById('typingBar').textContent=''; }, 3000);
     }
   });
-  S.socket.on('typing-stop', () => { document.getElementById('typingBar').textContent = ''; });
+  S.socket.on('typing-stop', () => { document.getElementById('typingBar').textContent=''; });
 
-  S.socket.on('reaction-updated', ({messageId, reactions}) => {
+  S.socket.on('reaction-updated', ({messageId,reactions}) => {
     const el = document.querySelector(`[data-id="${messageId}"] .msg-reactions`);
     if (el) el.innerHTML = renderReactions(reactions, messageId);
   });
 
-  S.socket.on('task-created', t  => { S.tasks.push(t);          renderTasks(); toast(`Task added: "${t.text.slice(0,40)}"`); });
-  S.socket.on('task-updated', t  => { const i=S.tasks.findIndex(x=>x.id===t.id); if(i!==-1) S.tasks[i]=t; renderTasks(); });
+  S.socket.on('task-created', t => { S.tasks.push(t); renderTasks(); toast('Task: "'+t.text.slice(0,35)+'"'); });
+  S.socket.on('task-updated', t => { const i=S.tasks.findIndex(x=>x.id===t.id); if(i!==-1) S.tasks[i]=t; renderTasks(); });
   S.socket.on('task-deleted', ({id}) => { S.tasks=S.tasks.filter(t=>t.id!==id); renderTasks(); });
 
   S.socket.on('channel-created', ch => {
-    if (!S.channels.find(c=>c.id===ch.id)) { S.channels.push(ch); renderSidebar(); toast(`#${ch.name} created`); }
+    if (!S.channels.find(c=>c.id===ch.id)) { S.channels.push(ch); renderSidebar(); toast('#'+ch.name+' created'); }
+  });
+  S.socket.on('presence-update', ({users}) => renderPresence(users));
+  S.socket.on('file-uploaded', f => { S.files.unshift(f); renderFiles(); toast('File: '+f.name); });
+
+  // Google Docs unfurl
+  S.socket.on('doc-unfurled', ({messageId, preview}) => {
+    S.docs[preview.docId] = preview;
+    const row = document.querySelector(`[data-id="${messageId}"]`);
+    if (row) {
+      const existing = row.querySelector('.doc-card');
+      if (!existing) {
+        const card = buildDocCard(preview);
+        row.querySelector('.msg-body').appendChild(card);
+      }
+    }
+    if (!S.docs[S.channel]) S.docs[S.channel] = {};
+    toast('Doc linked: '+preview.title.slice(0,30));
+    if (S.panel==='docs') loadChannelDocs();
   });
 
-  S.socket.on('presence-update', ({users}) => renderPresence(users));
-
-  S.socket.on('file-uploaded', f => { S.files.unshift(f); renderFiles(); toast(`File shared: ${f.name}`); });
+  S.socket.on('workflow-created', wf => { S.workflows.push(wf); renderWorkflows(); toast('Workflow created: '+wf.name); });
+  S.socket.on('workflow-updated', wf => { const i=S.workflows.findIndex(w=>w.id===wf.id); if(i!==-1) S.workflows[i]=wf; renderWorkflows(); });
+  S.socket.on('workflow-deleted', ({id}) => { S.workflows=S.workflows.filter(w=>w.id!==id); renderWorkflows(); });
+  S.socket.on('workflow-run', ({workflowId, workflowName, run}) => {
+    const wf=S.workflows.find(w=>w.id===workflowId);
+    if (wf) { if (!wf.runs) wf.runs=[]; wf.runs.unshift(run); if(wf.runs.length>10) wf.runs.pop(); renderWorkflows(); }
+    const emoji = run.status==='success'?'✅':run.status==='error'?'❌':'⏭';
+    toast(emoji+' "'+workflowName+'" '+run.status+' ('+run.duration+'ms)');
+  });
 }
 
 function updateStatus(ok) {
-  document.getElementById('sDot').className  = 'status-dot' + (ok ? '' : ' off');
-  document.getElementById('sText').textContent = ok ? `Connected · ${S.me}` : 'Reconnecting…';
-  document.getElementById('topbarStatus').textContent = ok ? `v2.0 · GCP ✓` : `v2.0 · GCP ✗`;
+  document.getElementById('sDot').className='sdot'+(ok?'':' off');
+  document.getElementById('sText').textContent = ok ? 'Connected · '+S.me : 'Reconnecting…';
+  document.getElementById('topStatus').textContent = ok ? 'v2.1 · GCP ✓' : 'v2.1 · GCP ✗';
 }
 
-// ── Rendering ─────────────────────────────────────────────────────────────────
+// ── Render ─────────────────────────────────────────────────────────────────────
 function renderSidebar() {
   document.getElementById('channelList').innerHTML = S.channels.map(ch => `
-    <div class="sb-item ${ch.id===S.channel?'active':''}"
-         onclick="switchChannel('${ch.id}')"
-         role="listitem" tabindex="0"
-         aria-current="${ch.id===S.channel?'page':'false'}"
+    <div class="sb-item ${ch.id===S.channel?'active':''}" onclick="switchChannel('${ch.id}')"
+         role="listitem" tabindex="0" aria-current="${ch.id===S.channel?'page':'false'}"
          onkeydown="if(event.key==='Enter')switchChannel('${ch.id}')">
-      <span class="sb-hash" aria-hidden="true">#</span>
-      <span>${esc(ch.name)}</span>
-    </div>
-  `).join('');
+      <span class="sb-hash" aria-hidden="true">#</span><span>${esc(ch.name)}</span>
+    </div>`).join('');
 }
 
 function renderPresence(users) {
   const el = document.getElementById('presenceList');
-  if (!users || !users.length) {
-    el.innerHTML = '<div style="padding:4px 16px 8px;font-size:12px;color:#868587">No one else online</div>';
-    return;
-  }
-  el.innerHTML = users.slice(0,6).map(u => `
+  if (!users||!users.length) { el.innerHTML='<div style="padding:4px 16px 8px;font-size:12px;color:#868587">No one else online</div>'; return; }
+  el.innerHTML = users.slice(0,6).map(u=>`
     <div class="sb-item" role="listitem">
-      <div class="sb-avatar" style="background:${avatarColor(u.name)}">${esc(initials(u.name))}</div>
+      <div class="sb-avatar" style="background:${avColor(u.name)}">${esc(initials(u.name))}</div>
       <span style="font-size:13px">${esc(u.name)}</span>
-      <div class="presence-dot presence-online" aria-label="Online"></div>
-    </div>
-  `).join('');
+      <div class="presence-dot p-online" aria-label="Online"></div>
+    </div>`).join('');
 }
 
 function appendMsg(msg, scroll=true) {
   const list = document.getElementById('messagesList');
-  const t    = fmtTime(msg.ts);
-  const bg   = avatarColor(msg.user);
+  const bg   = avColor(msg.user);
   const el   = document.createElement('div');
-  el.className = 'msg-row';
-  el.setAttribute('data-id', msg.id);
-  el.setAttribute('role', 'article');
-  el.setAttribute('aria-label', `Message from ${msg.user}`);
+  el.className='msg-row'; el.setAttribute('data-id', msg.id); el.setAttribute('role','article');
+  const botBadge = msg.isBot ? '<span class="bot-badge">BOT</span>' : '';
   el.innerHTML = `
     <div class="msg-avatar" style="background:${bg}" aria-hidden="true">${esc(msg.avatar||initials(msg.user))}</div>
     <div class="msg-body">
       <div class="msg-meta">
-        <span class="msg-user">${esc(msg.user)}</span>
-        <span class="msg-time">${t}</span>
+        <span class="msg-user">${esc(msg.user)}</span>${botBadge}
+        <span class="msg-time">${fmtTime(msg.ts)}</span>
       </div>
       <div class="msg-text">${fmtMsg(msg.text)}</div>
       <div class="msg-reactions">${renderReactions(msg.reactions||{}, msg.id)}</div>
     </div>
-    <div class="msg-actions" aria-label="Message actions">
-      <button class="react-btn" title="👍" onclick="doReaction('${msg.id}','👍')" aria-label="Thumbs up">👍</button>
-      <button class="react-btn" title="❤️" onclick="doReaction('${msg.id}','❤️')" aria-label="Heart">❤️</button>
-      <button class="react-btn" title="🎉" onclick="doReaction('${msg.id}','🎉')" aria-label="Celebrate">🎉</button>
-      <button class="react-btn" title="✅" onclick="doReaction('${msg.id}','✅')" aria-label="Check">✅</button>
-    </div>
-  `;
+    <div class="msg-actions" aria-label="Reactions">
+      <button class="rbtn" onclick="doReact('${msg.id}','👍')" title="👍">👍</button>
+      <button class="rbtn" onclick="doReact('${msg.id}','❤️')" title="❤️">❤️</button>
+      <button class="rbtn" onclick="doReact('${msg.id}','🎉')" title="🎉">🎉</button>
+      <button class="rbtn" onclick="doReact('${msg.id}','✅')" title="✅">✅</button>
+    </div>`;
   list.appendChild(el);
+  // check for doc URLs in the rendered text and auto-unfurl from cache
+  const docMatches = msg.text.match(/https?:\/\/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]{10,})/g) || [];
+  docMatches.forEach(url => {
+    const docId = url.match(/\/document\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+    if (docId && S.docs[docId]) {
+      el.querySelector('.msg-body').appendChild(buildDocCard(S.docs[docId]));
+    }
+  });
   if (scroll) scrollBottom();
 }
 
-function renderReactions(reactions, msgId) {
-  return Object.entries(reactions)
-    .filter(([,u])=>u.length>0)
-    .map(([emoji,u]) =>
-      `<button class="reaction-pill" onclick="doReaction('${msgId}','${emoji}')"
-         title="${esc(u.join(', '))}" aria-label="${emoji} ${u.length} reactions">
-         ${emoji} <span>${u.length}</span>
-       </button>`
-    ).join('');
+function renderReactions(r, msgId) {
+  return Object.entries(r).filter(([,u])=>u.length>0)
+    .map(([e,u])=>`<button class="rpill" onclick="doReact('${msgId}','${e}')" title="${esc(u.join(', '))}" aria-label="${e} ${u.length}">${e} <span>${u.length}</span></button>`)
+    .join('');
+}
+
+function buildDocCard(p) {
+  const el = document.createElement('div');
+  el.className = 'doc-card';
+  const mimeIcon = (p.mimeType||'').includes('spreadsheet') ? '📊' : (p.mimeType||'').includes('presentation') ? '📑' : '📄';
+  el.innerHTML = `
+    <div class="doc-card-icon">${mimeIcon}</div>
+    <div class="doc-card-body">
+      <div class="doc-card-title">${esc(p.title)}</div>
+      <div class="doc-card-meta">Google Docs · ${esc(p.owner)} · ${new Date(p.lastModified).toLocaleDateString()}</div>
+      <div class="doc-card-snippet">${esc(p.snippet)}</div>
+      <div class="doc-card-btns">
+        <button class="doc-pill dp-open" onclick="window.open('${esc(p.viewerUrl||p.url)}','_blank')">📂 Open</button>
+        <button class="doc-pill dp-ai"   onclick="aiDocSummary('${p.docId}')">🤖 AI Summary</button>
+        <button class="doc-pill dp-pin"  onclick="embedDoc('${p.docId}')">🖼 Embed</button>
+      </div>
+    </div>`;
+  return el;
 }
 
 function renderTasks() {
-  const cols = [
-    { key:'pending',     label:'⏳ To Do' },
-    { key:'in-progress', label:'🔄 In Progress' },
-    { key:'completed',   label:'✅ Done' },
-  ];
-  document.getElementById('taskBoard').innerHTML = cols.map(col => {
-    const tasks = S.tasks.filter(t=>t.status===col.key);
-    return `
-      <div class="task-col-label">${col.label}<span class="task-count">${tasks.length}</span></div>
-      ${tasks.map(t=>`
-        <div class="task-card" role="article" aria-label="Task: ${esc(t.text)}">
-          <div class="task-text">${esc(t.text)}</div>
-          <div class="task-footer">
-            <span class="priority-badge p-${t.priority}">${t.priority}</span>
-            <span class="task-assignee">👤 ${esc(t.assignee)}</span>
-          </div>
-          <div class="task-btns">
-            ${col.key!=='in-progress'?`<button class="btn-sm" onclick="patchTask('${t.id}','in-progress')" style="font-size:11px;height:24px;padding:0 7px">→ Progress</button>`:''}
-            ${col.key!=='completed'?`<button class="btn-sm primary" onclick="patchTask('${t.id}','completed')" style="font-size:11px;height:24px;padding:0 7px">✓ Done</button>`:''}
-            <button class="btn-sm danger" onclick="removeTask('${t.id}')" style="font-size:11px;height:24px;padding:0 7px">✕</button>
-          </div>
+  const cols=[{key:'pending',label:'⏳ To Do'},{key:'in-progress',label:'🔄 In Progress'},{key:'completed',label:'✅ Done'}];
+  document.getElementById('taskBoard').innerHTML = cols.map(col=>{
+    const t = S.tasks.filter(x=>x.status===col.key);
+    return `<div class="tcol-label">${col.label}<span class="tcnt">${t.length}</span></div>
+    ${t.map(t=>`
+      <div class="tcard" role="article" aria-label="Task: ${esc(t.text)}">
+        <div class="tcard-text">${esc(t.text)}</div>
+        <div class="tcard-foot">
+          <span class="pbadge p-${t.priority}">${t.priority}</span>
+          <span class="tcard-assign">👤 ${esc(t.assignee)}</span>
         </div>
-      `).join('')}
-    `;
+        <div class="tcard-btns">
+          ${t.status!=='in-progress'?`<button class="btn-sm" onclick="patchTask('${t.id}','in-progress')" style="font-size:11px;height:24px;padding:0 7px">→ Progress</button>`:''}
+          ${t.status!=='completed'?`<button class="btn-sm primary" onclick="patchTask('${t.id}','completed')" style="font-size:11px;height:24px;padding:0 7px">✓ Done</button>`:''}
+          <button class="btn-sm danger" onclick="deleteTask('${t.id}')" style="font-size:11px;height:24px;padding:0 7px">✕</button>
+        </div>
+      </div>`).join('')}`;
   }).join('');
 }
 
 function renderFiles() {
-  const el = document.getElementById('filesList');
-  if (!S.files.length) { el.innerHTML = '<p style="text-align:center;padding:24px 0;color:var(--text-secondary);font-size:13px">No files shared yet</p>'; return; }
-  const icons = {pdf:'📄',png:'🖼️',jpg:'🖼️',jpeg:'🖼️',gif:'🎞️',zip:'🗜️',doc:'📝',docx:'📝',mp4:'🎬',csv:'📊'};
-  el.innerHTML = S.files.map(f => {
-    const ext  = f.name.split('.').pop().toLowerCase();
-    const icon = icons[ext] || '📎';
-    return `
-      <div class="file-item">
-        <span class="file-icon" aria-hidden="true">${icon}</span>
-        <div class="file-info">
-          <div class="file-name" title="${esc(f.name)}">${esc(f.name)}</div>
-          <div class="file-meta">${esc(f.size)} · ${esc(f.uploader)} · #${esc(f.channel)}</div>
-        </div>
-        <a href="${esc(f.url)}" target="_blank" class="btn-sm file-dl" aria-label="Download ${esc(f.name)}">↓</a>
-      </div>
-    `;
+  const el=document.getElementById('filesList');
+  if (!S.files.length) { el.innerHTML='<p style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px">No files shared yet</p>'; return; }
+  const icons={pdf:'📄',png:'🖼️',jpg:'🖼️',jpeg:'🖼️',gif:'🎞️',zip:'🗜️',doc:'📝',docx:'📝',mp4:'🎬',csv:'📊'};
+  el.innerHTML = S.files.map(f=>{
+    const icon=icons[f.name.split('.').pop().toLowerCase()]||'📎';
+    return `<div class="file-item"><span class="file-icon">${icon}</span><div class="file-info"><div class="file-name" title="${esc(f.name)}">${esc(f.name)}</div><div class="file-meta">${esc(f.size)} · ${esc(f.uploader)} · #${esc(f.channel)}</div></div><a href="${esc(f.url)}" target="_blank" class="btn-sm" style="font-size:11px;padding:0 8px;height:26px;display:flex;align-items:center">↓</a></div>`;
   }).join('');
 }
 
-// ── Actions ───────────────────────────────────────────────────────────────────
-async function switchChannel(id) {
-  if (id === S.channel) return;
-  S.channel = id;
-  const ch = S.channels.find(c=>c.id===id);
-  document.getElementById('chName').textContent  = ch?.name || id;
-  document.getElementById('chDesc').textContent  = ch?.description || '';
-  document.getElementById('msgInput').placeholder = `Message #${ch?.name||id}`;
-  document.getElementById('messagesList').innerHTML = '';
-  renderSidebar();
-  if (S.socket) S.socket.emit('join-channel', id);
+// ── Docs Panel ─────────────────────────────────────────────────────────────────
+async function loadChannelDocs() {
   try {
-    const msgs = await api(`/api/channels/${id}/messages`);
-    msgs.forEach(m => appendMsg(m, false));
-    scrollBottom();
-  } catch { toast('Could not load messages'); }
+    const docs = await api('/api/docs?channel='+S.channel);
+    docs.forEach(d => { S.docs[d.docId]=d; });
+    renderDocsList(docs);
+  } catch { document.getElementById('docsList').innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px 0">Could not load docs.</p>'; }
 }
 
-function sendMessage() {
-  const input = document.getElementById('msgInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = ''; input.style.height = 'auto';
-  if (S.socket && S.connected) {
-    S.socket.emit('typing-stop', { channelId: S.channel });
-    S.socket.emit('send-message', { channelId: S.channel, text, user: S.me, avatar: initials(S.me) });
-  } else {
-    api(`/api/channels/${S.channel}/messages`, { method:'POST', body: JSON.stringify({text, user: S.me}) })
-      .catch(() => toast('Failed to send'));
+function renderDocsList(docs) {
+  const el = document.getElementById('docsList');
+  if (!docs.length) { el.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px 0">No docs shared in #'+esc(S.channel)+' yet.<br/>Paste a Google Docs link in chat to add one.</p>'; return; }
+  el.innerHTML = docs.map(d=>`
+    <div class="doc-list-item ${S.selectedDocId===d.docId?'selected':''}" onclick="embedDoc('${d.docId}')" role="button" aria-label="Open ${esc(d.title)}">
+      <div class="doc-list-icon">📄</div>
+      <div class="doc-list-info">
+        <div class="doc-list-title">${esc(d.title)}</div>
+        <div class="doc-list-meta">${esc(d.owner)} · ${new Date(d.lastModified).toLocaleDateString()}</div>
+      </div>
+      <button class="btn-sm" onclick="event.stopPropagation();aiDocSummary('${d.docId}')" style="font-size:11px;padding:0 7px;height:24px;flex-shrink:0">🤖 AI</button>
+    </div>`).join('');
+}
+
+function embedDoc(docId) {
+  S.selectedDocId = docId;
+  const d = S.docs[docId];
+  if (!d) { toast('Doc not found — try previewing via URL'); return; }
+  document.getElementById('docEmbedArea').innerHTML = `
+    <div class="doc-embed-wrap">
+      <div class="doc-embed-hdr">
+        <span class="doc-embed-title">📄 ${esc(d.title)}</span>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn-sm" onclick="aiDocSummary('${docId}')" style="font-size:11px;padding:0 7px;height:24px">🤖 AI</button>
+          <a class="btn-sm" href="${esc(d.viewerUrl||d.url)}" target="_blank" style="font-size:11px;padding:0 7px;height:24px;display:flex;align-items:center">↗ Open</a>
+        </div>
+      </div>
+      <iframe src="${esc(d.embedUrl)}" title="${esc(d.title)}" sandbox="allow-scripts allow-same-origin" loading="lazy" aria-label="Document: ${esc(d.title)}"></iframe>
+    </div>`;
+  renderDocsList(Object.values(S.docs).filter(x=>x.channel===S.channel||!x.channel));
+}
+
+async function aiDocSummary(docId) {
+  switchPanel('docs');
+  document.getElementById('docSummaryArea').innerHTML = '<div class="doc-summary-box"><p style="text-align:center;padding:8px">🤖 Summarising document…</p></div>';
+  try {
+    const d = await api('/api/docs/summary?docId='+docId);
+    document.getElementById('docSummaryArea').innerHTML = `
+      <div class="doc-summary-box">
+        <h4>AI Summary — ${esc(d.title)}</h4>
+        <p style="margin-bottom:8px">${esc(d.summary)}</p>
+        <div class="ai-chips">
+          <span class="ai-chip">📝 ~${d.wordCount} words</span>
+          <span class="ai-chip">🎯 ${Math.round(d.confidence*100)}% confidence</span>
+          <span class="ai-chip">${d.mode==='docs-api'?'✅ Live':'🔄 Simulated'}</span>
+        </div>
+      </div>`;
+  } catch { document.getElementById('docSummaryArea').innerHTML = '<div class="doc-summary-box"><p style="color:var(--red)">Error generating summary.</p></div>'; }
+}
+
+function toggleDocInput() {
+  const el = document.getElementById('docInputArea');
+  el.classList.toggle('hidden');
+  if (!el.classList.contains('hidden')) document.getElementById('docUrlInput').focus();
+}
+
+async function previewDocUrl() {
+  const url = document.getElementById('docUrlInput').value.trim();
+  if (!url || !isGoogleDocUrl(url)) { toast('Please enter a valid Google Docs URL'); return; }
+  try {
+    const preview = await api('/api/docs/preview?url='+encodeURIComponent(url));
+    S.docs[preview.docId] = preview;
+    preview.channel  = S.channel;
+    preview.sharedBy = S.me;
+    toggleDocInput();
+    document.getElementById('docUrlInput').value = '';
+    renderDocsList(Object.values(S.docs).filter(d=>d.channel===S.channel||!d.channel));
+    embedDoc(preview.docId);
+    toast('Doc linked: '+preview.title.slice(0,35));
+    // Also share in channel
+    if (S.socket && S.connected) {
+      S.socket.emit('send-message', { channelId: S.channel, text: '📄 Shared a document: '+url, user: S.me, avatar: initials(S.me) });
+    }
+  } catch { toast('Could not fetch doc preview. Check the URL.'); }
+}
+
+function promptDocUrl() {
+  switchPanel('docs');
+  const el = document.getElementById('docInputArea');
+  if (el.classList.contains('hidden')) { el.classList.remove('hidden'); }
+  document.getElementById('docUrlInput').focus();
+}
+
+// ── Workflows ──────────────────────────────────────────────────────────────────
+function renderWorkflows() {
+  const el = document.getElementById('workflowList');
+  if (!S.workflows.length) { el.innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No workflows yet.<br/>Click "+ New" to automate a task.</p>'; return; }
+  el.innerHTML = S.workflows.map(wf=>`
+    <div class="wf-card" id="wf-${wf.id}">
+      <div class="wf-card-hdr">
+        <span class="wf-name">${esc(wf.name)}</span>
+        <span class="wf-status ${wf.enabled?'wf-on':'wf-off'}">${wf.enabled?'ON':'OFF'}</span>
+        <label class="toggle" title="${wf.enabled?'Disable':'Enable'} workflow">
+          <input type="checkbox" ${wf.enabled?'checked':''} onchange="toggleWorkflow('${wf.id}',this.checked)"/>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="wf-trigger">⚡ ${esc(wf.trigger.label||wf.trigger.type)}</div>
+      <div class="wf-actions-line">
+        ${wf.actions.map((a,i)=>`${i>0?'<span class="wf-arrow">→</span>':''}<span class="wf-action-chip">${actionLabel(a)}</span>`).join('')}
+      </div>
+      ${wf.runs&&wf.runs.length ? `<div class="run-history">${wf.runs.slice(0,3).map(r=>`<div class="run-item"><div class="run-dot run-${r.status}"></div>${r.status} · ${r.duration||0}ms · ${new Date(r.startedAt).toLocaleTimeString()}</div>`).join('')}</div>` : ''}
+      <div class="wf-footer">
+        <button class="btn-sm primary" onclick="runWorkflow('${wf.id}')" style="font-size:11px;padding:0 8px;height:24px">▶ Run Now</button>
+        <button class="btn-sm danger"  onclick="deleteWorkflow('${wf.id}')" style="font-size:11px;padding:0 8px;height:24px">✕ Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function actionLabel(a) {
+  switch(a.type) {
+    case 'post-message': return '💬 Post message';
+    case 'create-task':  return '📋 Create task';
+    case 'ai-summary':   return '🤖 AI summary';
+    case 'webhook':      return '🌐 Webhook';
+    default:             return a.type;
   }
 }
 
-function doReaction(messageId, emoji) {
-  if (S.socket) S.socket.emit('add-reaction', { channelId: S.channel, messageId, emoji, user: S.me });
+async function runWorkflow(id) {
+  try {
+    const run = await api('/api/workflows/'+id+'/run', { method:'POST', body: JSON.stringify({payload:{}}) });
+    toast(run.status==='success' ? '✅ Workflow ran successfully' : '❌ Workflow error: '+run.error);
+  } catch { toast('Failed to run workflow'); }
 }
+
+async function toggleWorkflow(id, enabled) {
+  try {
+    await api('/api/workflows/'+id, { method:'PATCH', body: JSON.stringify({enabled}) });
+  } catch { toast('Failed to update workflow'); }
+}
+
+async function deleteWorkflow(id) {
+  if (!confirm('Delete this workflow?')) return;
+  try {
+    await api('/api/workflows/'+id, { method:'DELETE' });
+    S.workflows = S.workflows.filter(w=>w.id!==id);
+    renderWorkflows();
+  } catch { toast('Failed to delete workflow'); }
+}
+
+// ── Workflow Modal ─────────────────────────────────────────────────────────────
+function openWfModal() {
+  S.wfActions = [];
+  S.wfTriggerType = 'message-keyword';
+  document.getElementById('wfName').value = '';
+  document.getElementById('triggerConfig').value = '';
+  document.getElementById('actionsBuilder').innerHTML = '';
+  // Select first trigger
+  document.querySelectorAll('.trigger-opt').forEach(el=>el.classList.remove('selected'));
+  document.querySelector('[data-type="message-keyword"]').classList.add('selected');
+  updateTriggerConfig('message-keyword');
+  addAction('post-message');
+  document.getElementById('wfModal').classList.remove('hidden');
+  document.getElementById('wfName').focus();
+}
+function closeWfModal() { document.getElementById('wfModal').classList.add('hidden'); }
+
+function selectTrigger(el) {
+  document.querySelectorAll('.trigger-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  S.wfTriggerType = el.dataset.type;
+  updateTriggerConfig(S.wfTriggerType);
+}
+
+function updateTriggerConfig(type) {
+  const area  = document.getElementById('triggerConfigArea');
+  const label = document.getElementById('triggerConfigLabel');
+  const input = document.getElementById('triggerConfig');
+  if (type==='message-keyword') { label.textContent='Keyword to match (leave blank for any)'; input.placeholder='e.g. urgent, deploy, help'; area.classList.remove('hidden'); }
+  else if (type==='schedule')   { label.textContent='Schedule (human-readable)'; input.placeholder='e.g. Every weekday at 09:00'; area.classList.remove('hidden'); }
+  else                          { area.classList.add('hidden'); }
+}
+
+function addAction(type) {
+  const id = 'action-'+Date.now();
+  S.wfActions.push({ id, type });
+  const builder = document.getElementById('actionsBuilder');
+  const div = document.createElement('div');
+  div.className='action-row'; div.id=id;
+  let fields='';
+  if (type==='post-message') fields=`
+    <div class="field" style="margin-bottom:8px"><label>Channel</label><input type="text" class="action-channel" placeholder="general"/></div>
+    <div class="field" style="margin-bottom:0"><label>Message template</label><textarea class="action-template" rows="2" placeholder="e.g. New task: {{task.text}} by {{task.assignee}}"></textarea></div>`;
+  else if (type==='create-task') fields=`
+    <div class="field" style="margin-bottom:8px"><label>Task text</label><input type="text" class="action-tasktext" placeholder="e.g. Follow up on {{message.text}}"/></div>
+    <div class="field" style="margin-bottom:0"><label>Priority</label><select class="action-priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>`;
+  else if (type==='ai-summary') fields=`<div class="field" style="margin-bottom:0"><label>Channel to summarise</label><input type="text" class="action-channel" placeholder="general"/></div>`;
+  else if (type==='webhook') fields=`<div class="field" style="margin-bottom:0"><label>Webhook URL</label><input type="url" class="action-url" placeholder="https://…"/></div>`;
+  div.innerHTML=`
+    <div class="action-row-hdr">
+      <span class="action-type-label">${actionLabel({type})}</span>
+      <button class="action-remove" onclick="removeAction('${id}')" aria-label="Remove action">✕</button>
+    </div>${fields}`;
+  builder.appendChild(div);
+}
+
+function removeAction(id) {
+  S.wfActions = S.wfActions.filter(a=>a.id!==id);
+  document.getElementById(id)?.remove();
+}
+
+async function saveWorkflow() {
+  const name = document.getElementById('wfName').value.trim();
+  if (!name) { toast('Please enter a workflow name'); return; }
+  const configVal = document.getElementById('triggerConfig').value.trim();
+  const trigger = {
+    type:   S.wfTriggerType,
+    label:  triggerLabelFor(S.wfTriggerType, configVal),
+    config: S.wfTriggerType==='message-keyword' ? {keyword:configVal} : S.wfTriggerType==='schedule' ? {schedule:configVal} : {},
+  };
+  const actions = [];
+  document.querySelectorAll('#actionsBuilder .action-row').forEach(row => {
+    const at = row.querySelector('.action-type-label')?.textContent;
+    const typeMap = {'💬 Post message':'post-message','📋 Create task':'create-task','🤖 AI summary':'ai-summary','🌐 Webhook':'webhook'};
+    const aType   = typeMap[at] || 'post-message';
+    const action  = { type: aType };
+    if (aType==='post-message') { action.channel=row.querySelector('.action-channel')?.value||'general'; action.template=row.querySelector('.action-template')?.value||''; }
+    else if (aType==='create-task') { action.taskText=row.querySelector('.action-tasktext')?.value||''; action.priority=row.querySelector('.action-priority')?.value||'medium'; }
+    else if (aType==='ai-summary')  { action.channel=row.querySelector('.action-channel')?.value||'general'; }
+    else if (aType==='webhook')     { action.url=row.querySelector('.action-url')?.value||''; }
+    actions.push(action);
+  });
+  try {
+    await api('/api/workflows', { method:'POST', body: JSON.stringify({name, trigger, actions}) });
+    closeWfModal();
+    toast('Workflow "'+name+'" created');
+  } catch { toast('Failed to create workflow'); }
+}
+
+function triggerLabelFor(type, config) {
+  if (type==='message-keyword') return config ? 'Message contains "'+config+'"' : 'Any message sent';
+  if (type==='task-completed')  return 'When a task is marked done';
+  if (type==='schedule')        return config || 'Scheduled trigger';
+  if (type==='doc-shared')      return 'When a Google Doc is shared';
+  return type;
+}
+
+// ── Actions ────────────────────────────────────────────────────────────────────
+async function switchChannel(id) {
+  if (id===S.channel) return;
+  S.channel=id; S.selectedDocId=null;
+  const ch=S.channels.find(c=>c.id===id);
+  document.getElementById('chName').textContent  = ch?.name||id;
+  document.getElementById('chDesc').textContent  = ch?.description||'';
+  document.getElementById('msgInput').placeholder = 'Message #'+(ch?.name||id);
+  document.getElementById('messagesList').innerHTML='';
+  document.getElementById('docEmbedArea').innerHTML='';
+  document.getElementById('docSummaryArea').innerHTML='';
+  renderSidebar();
+  if (S.socket) S.socket.emit('join-channel', id);
+  try {
+    const msgs = await api('/api/channels/'+id+'/messages');
+    msgs.forEach(m=>appendMsg(m,false)); scrollBottom();
+  } catch { toast('Could not load messages'); }
+  if (S.panel==='docs') loadChannelDocs();
+}
+
+function sendMessage() {
+  const input=document.getElementById('msgInput'), text=input.value.trim();
+  if (!text) return;
+  input.value=''; input.style.height='auto';
+  if (S.socket&&S.connected) {
+    S.socket.emit('typing-stop',{channelId:S.channel});
+    S.socket.emit('send-message',{channelId:S.channel,text,user:S.me,avatar:initials(S.me)});
+  } else {
+    api('/api/channels/'+S.channel+'/messages',{method:'POST',body:JSON.stringify({text,user:S.me})}).catch(()=>toast('Failed to send'));
+  }
+}
+
+function doReact(msgId,emoji) { if (S.socket) S.socket.emit('add-reaction',{channelId:S.channel,messageId:msgId,emoji,user:S.me}); }
 
 async function createTask() {
-  const input = document.getElementById('taskInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = '';
+  const input=document.getElementById('taskInput'), text=input.value.trim();
+  if (!text) return; input.value='';
   document.getElementById('taskInputRow').classList.add('hidden');
-  try {
-    await api('/api/tasks', { method:'POST', body: JSON.stringify({ text, assignee: S.me, channel: S.channel, priority:'medium' }) });
-  } catch { toast('Failed to create task'); }
+  try { await api('/api/tasks',{method:'POST',body:JSON.stringify({text,assignee:S.me,channel:S.channel,priority:'medium'})}); }
+  catch { toast('Failed to create task'); }
 }
-
-async function patchTask(id, status) {
-  try { await api(`/api/tasks/${id}`, { method:'PATCH', body: JSON.stringify({status}) }); }
-  catch { toast('Failed to update task'); }
-}
-
-async function removeTask(id) {
-  try {
-    await api(`/api/tasks/${id}`, { method:'DELETE' });
-    S.tasks = S.tasks.filter(t=>t.id!==id);
-    renderTasks();
-  } catch { toast('Failed to delete task'); }
-}
-
-function toggleTaskInput() {
-  const row = document.getElementById('taskInputRow');
-  row.classList.toggle('hidden');
-  if (!row.classList.contains('hidden')) document.getElementById('taskInput').focus();
-}
+async function patchTask(id,status) { try { await api('/api/tasks/'+id,{method:'PATCH',body:JSON.stringify({status})}); } catch { toast('Failed to update'); } }
+async function deleteTask(id) { try { await api('/api/tasks/'+id,{method:'DELETE'}); S.tasks=S.tasks.filter(t=>t.id!==id); renderTasks(); } catch { toast('Failed to delete'); } }
+function toggleTaskInput() { const r=document.getElementById('taskInputRow'); r.classList.toggle('hidden'); if(!r.classList.contains('hidden')) document.getElementById('taskInput').focus(); }
 
 // AI
+function setAiResult(html) { document.getElementById('aiResult').innerHTML='<div class="ai-result">'+html+'</div>'; }
 async function doAiSuggest() {
-  switchPanel('ai');
-  setAiResult('<p style="text-align:center;padding:16px">✨ Analysing messages…</p>');
+  switchPanel('ai'); setAiResult('<p style="text-align:center;padding:16px">✨ Analysing…</p>');
   try {
-    const data = await api('/api/ai/suggest-tasks');
-    setAiResult(`
-      <h4>Suggested Action Items</h4>
-      ${data.map(s=>`
-        <div class="ai-suggestion">
-          <span class="priority-badge p-${s.priority}">${s.priority}</span>
-          <div class="ai-suggestion-text">
-            <div class="ai-suggestion-title">${esc(s.text)}</div>
-            <div class="ai-suggestion-src">${esc(s.source)}</div>
-          </div>
-          <button class="btn-sm primary" onclick="quickTask('${esc(s.text).replace(/'/g,"\\'")}','${s.priority}')" style="font-size:11px;height:24px;padding:0 7px">+ Add</button>
-        </div>
-      `).join('')}
-    `);
-  } catch { setAiResult('<p style="color:var(--red)">Error fetching suggestions.</p>'); }
+    const d=await api('/api/ai/suggest-tasks');
+    setAiResult(`<h4>Suggested Action Items</h4>${d.map(s=>`<div class="ai-sug"><span class="pbadge p-${s.priority}">${s.priority}</span><div class="ai-sug-text"><div class="ai-sug-title">${esc(s.text)}</div><div class="ai-sug-src">${esc(s.source)}</div></div><button class="btn-sm primary" onclick="quickTask('${esc(s.text).replace(/'/g,"\\'")}','${s.priority}')" style="font-size:11px;height:24px;padding:0 7px">+ Add</button></div>`).join('')}`);
+  } catch { setAiResult('<p style="color:var(--red)">Error.</p>'); }
 }
-
 async function doAiSummarize() {
-  switchPanel('ai');
-  setAiResult('<p style="text-align:center;padding:16px">📝 Generating summary…</p>');
+  switchPanel('ai'); setAiResult('<p style="text-align:center;padding:16px">📝 Generating…</p>');
   try {
-    const d = await api(`/api/ai/summarize?channel=${S.channel}`);
-    setAiResult(`
-      <h4>Channel Summary — #${esc(d.channel)}</h4>
-      <p style="margin-bottom:10px">${esc(d.summary)}</p>
-      <div class="ai-stat">
-        <span class="ai-chip">💬 ${d.messageCount} msgs</span>
-        <span class="ai-chip">😊 ${d.sentiment}</span>
-        <span class="ai-chip">🎯 ${Math.round(d.confidence*100)}% confidence</span>
-      </div>
-    `);
-  } catch { setAiResult('<p style="color:var(--red)">Error generating summary.</p>'); }
+    const d=await api('/api/ai/summarize?channel='+S.channel);
+    setAiResult(`<h4>Summary — #${esc(d.channel)}</h4><p style="margin-bottom:8px">${esc(d.summary)}</p><div class="ai-chips"><span class="ai-chip">💬 ${d.messageCount}</span><span class="ai-chip">😊 ${d.sentiment}</span><span class="ai-chip">🎯 ${Math.round(d.confidence*100)}%</span></div>`);
+  } catch { setAiResult('<p style="color:var(--red)">Error.</p>'); }
 }
-
 async function doAiExtract() {
-  switchPanel('ai');
-  setAiResult('<p style="text-align:center;padding:16px">🎯 Scanning for TODOs…</p>');
+  switchPanel('ai'); setAiResult('<p style="text-align:center;padding:16px">🎯 Scanning…</p>');
   try {
-    const d = await api(`/api/ai/extract-tasks?channel=${S.channel}`);
-    if (!d.extracted.length) { setAiResult('<p>No implicit TODOs found in recent messages.</p>'); return; }
-    setAiResult(`
-      <h4>Implicit TODOs in #${esc(d.channel)}</h4>
-      ${d.extracted.map(e=>`
-        <div class="ai-suggestion">
-          <div class="ai-suggestion-text">
-            <div class="ai-suggestion-title">"${esc(e.text)}"</div>
-            <div class="ai-suggestion-src">from ${esc(e.source)}</div>
-          </div>
-        </div>
-      `).join('')}
-    `);
-  } catch { setAiResult('<p style="color:var(--red)">Error extracting tasks.</p>'); }
+    const d=await api('/api/ai/extract-tasks?channel='+S.channel);
+    if (!d.extracted.length) { setAiResult('<p>No implicit TODOs found.</p>'); return; }
+    setAiResult(`<h4>Implicit TODOs in #${esc(d.channel)}</h4>${d.extracted.map(e=>`<div class="ai-sug"><div class="ai-sug-text"><div class="ai-sug-title">"${esc(e.text)}"</div><div class="ai-sug-src">from ${esc(e.source)}</div></div></div>`).join('')}`);
+  } catch { setAiResult('<p style="color:var(--red)">Error.</p>'); }
 }
-
-function setAiResult(html) {
-  document.getElementById('aiResult').innerHTML = `<div class="ai-result">${html}</div>`;
-}
-
-async function quickTask(text, priority) {
-  try {
-    await api('/api/tasks', { method:'POST', body: JSON.stringify({ text, priority, assignee: S.me, channel: S.channel }) });
-    toast('Task added!'); switchPanel('tasks');
-  } catch { toast('Failed to add task'); }
-}
+async function quickTask(text,priority) { try { await api('/api/tasks',{method:'POST',body:JSON.stringify({text,priority,assignee:S.me,channel:S.channel})}); toast('Task added!'); switchPanel('tasks'); } catch { toast('Failed'); } }
 
 async function simulateUpload() {
-  const name = `colliq-upload-${Date.now()}.pdf`;
-  try {
-    await api('/api/upload', {
-      method:'POST',
-      body: JSON.stringify({ name, size: `${Math.floor(Math.random()*900+100)} KB`, uploader: S.me, channel: S.channel }),
-    });
-    switchPanel('files');
-    toast(`File uploaded to GCS: ${name}`);
-  } catch { toast('Upload failed'); }
+  const name='colliq-'+Date.now()+'.pdf';
+  try { await api('/api/upload',{method:'POST',body:JSON.stringify({name,size:Math.floor(Math.random()*900+100)+' KB',uploader:S.me,channel:S.channel})}); switchPanel('files'); toast('File uploaded to GCS: '+name); }
+  catch { toast('Upload failed'); }
 }
 
-// Panel switching
 function switchPanel(p) {
-  S.panel = p;
-  ['tasks','ai','files'].forEach(id => {
-    document.getElementById(`panel-${id}`).classList.toggle('hidden', id!==p);
-    const tab = document.getElementById(`tab-${id}`);
-    tab.classList.toggle('active', id===p);
-    tab.setAttribute('aria-selected', id===p ? 'true' : 'false');
+  S.panel=p;
+  ['tasks','ai','docs','files','flows'].forEach(id=>{
+    document.getElementById('panel-'+id).classList.toggle('hidden',id!==p);
+    const tab=document.getElementById('tab-'+id);
+    tab.classList.toggle('active',id===p);
+    tab.setAttribute('aria-selected',id===p?'true':'false');
   });
+  if (p==='docs')  loadChannelDocs();
+  if (p==='flows') renderWorkflows();
 }
 
 // Channel modal
-function openNewChannelModal() { document.getElementById('channelModal').classList.remove('hidden'); document.getElementById('newChName').focus(); }
-function closeModal()           { document.getElementById('channelModal').classList.add('hidden'); document.getElementById('newChName').value=''; document.getElementById('newChDesc').value=''; }
+function openChModal() { document.getElementById('chModal').classList.remove('hidden'); document.getElementById('newChName').focus(); }
+function closeChModal() { document.getElementById('chModal').classList.add('hidden'); document.getElementById('newChName').value=''; document.getElementById('newChDesc').value=''; }
 async function createChannel() {
-  const name = document.getElementById('newChName').value.trim().toLowerCase().replace(/\s+/g,'-');
-  const desc = document.getElementById('newChDesc').value.trim();
+  const name=document.getElementById('newChName').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const desc=document.getElementById('newChDesc').value.trim();
   if (!name) return;
-  try {
-    await api('/api/channels', { method:'POST', body: JSON.stringify({name, description:desc}) });
-    closeModal(); toast(`Channel #${name} created`);
-  } catch { toast('Channel already exists or invalid name'); }
+  try { await api('/api/channels',{method:'POST',body:JSON.stringify({name,description:desc})}); closeChModal(); toast('#'+name+' created'); }
+  catch { toast('Channel already exists or invalid name'); }
 }
 
 // Search
 let _srTimer;
-document.getElementById('globalSearch').addEventListener('input', e => {
+document.getElementById('globalSearch').addEventListener('input', e=>{
   clearTimeout(_srTimer);
-  const q = e.target.value.trim();
-  const box = document.getElementById('searchResults');
+  const q=e.target.value.trim(), box=document.getElementById('searchResults');
   if (!q) { box.classList.add('hidden'); return; }
-  _srTimer = setTimeout(async () => {
+  _srTimer = setTimeout(async()=>{
     try {
-      const d = await api(`/api/search?q=${encodeURIComponent(q)}`);
-      if (!d.messages.length && !d.tasks.length) { box.classList.add('hidden'); return; }
-      box.innerHTML = '';
-      if (d.messages.length) {
-        const sec = document.createElement('div');
-        sec.className = 'sr-section';
-        sec.innerHTML = `<h4>Messages (${d.messages.length})</h4>` +
-          d.messages.slice(0,5).map(m=>`
-            <div class="sr-item" onclick="switchChannel('${m.channelId}');document.getElementById('globalSearch').value='';document.getElementById('searchResults').classList.add('hidden')">
-              <span class="sr-ch">#${esc(m.channelId)}</span>
-              <span class="sr-text">${esc(m.text.slice(0,60))}</span>
-              <span class="sr-user">${esc(m.user)}</span>
-            </div>`).join('');
-        box.appendChild(sec);
-      }
-      if (d.tasks.length) {
-        const sec = document.createElement('div');
-        sec.className = 'sr-section';
-        sec.innerHTML = `<h4>Tasks (${d.tasks.length})</h4>` +
-          d.tasks.slice(0,4).map(t=>`
-            <div class="sr-item" onclick="switchPanel('tasks');document.getElementById('globalSearch').value='';document.getElementById('searchResults').classList.add('hidden')">
-              <span class="priority-badge p-${t.priority}">${t.priority}</span>
-              <span class="sr-text">${esc(t.text.slice(0,60))}</span>
-              <span class="sr-user">${esc(t.assignee)}</span>
-            </div>`).join('');
-        box.appendChild(sec);
-      }
+      const d=await api('/api/search?q='+encodeURIComponent(q));
+      if (!d.messages.length&&!d.tasks.length&&!d.docs.length) { box.classList.add('hidden'); return; }
+      box.innerHTML='';
+      if (d.messages.length) { const s=document.createElement('div'); s.className='sr-sec'; s.innerHTML=`<h4>Messages (${d.messages.length})</h4>`+d.messages.slice(0,5).map(m=>`<div class="sr-item" onclick="switchChannel('${m.channelId}');closeSearch()"><span class="sr-ch">#${esc(m.channelId)}</span><span class="sr-text">${esc(m.text.slice(0,55))}</span></div>`).join(''); box.appendChild(s); }
+      if (d.tasks.length) { const s=document.createElement('div'); s.className='sr-sec'; s.innerHTML=`<h4>Tasks (${d.tasks.length})</h4>`+d.tasks.slice(0,4).map(t=>`<div class="sr-item" onclick="switchPanel('tasks');closeSearch()"><span class="pbadge p-${t.priority}">${t.priority}</span><span class="sr-text">${esc(t.text.slice(0,55))}</span></div>`).join(''); box.appendChild(s); }
+      if (d.docs.length) { const s=document.createElement('div'); s.className='sr-sec'; s.innerHTML=`<h4>Docs (${d.docs.length})</h4>`+d.docs.slice(0,3).map(d=>`<div class="sr-item" onclick="switchPanel('docs');embedDoc('${d.docId}');closeSearch()"><span class="sr-ch">doc</span><span class="sr-text">${esc(d.title.slice(0,55))}</span></div>`).join(''); box.appendChild(s); }
       box.classList.remove('hidden');
     } catch {}
   }, 350);
 });
-document.addEventListener('click', e => {
-  if (!e.target.closest('.topbar-search')) document.getElementById('searchResults').classList.add('hidden');
-});
-document.getElementById('globalSearch').addEventListener('keydown', e => { if (e.key==='Escape') document.getElementById('searchResults').classList.add('hidden'); });
+function closeSearch() { document.getElementById('globalSearch').value=''; document.getElementById('searchResults').classList.add('hidden'); }
+document.addEventListener('click', e=>{ if (!e.target.closest('.topbar-search')) document.getElementById('searchResults').classList.add('hidden'); });
+document.getElementById('globalSearch').addEventListener('keydown', e=>{ if(e.key==='Escape') document.getElementById('searchResults').classList.add('hidden'); });
 
 // Composer
-const msgInput = document.getElementById('msgInput');
-msgInput.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-msgInput.addEventListener('input', () => {
-  msgInput.style.height = 'auto';
-  msgInput.style.height = Math.min(msgInput.scrollHeight, 140) + 'px';
-  if (S.socket && S.channel) {
-    S.socket.emit('typing-start', { channelId: S.channel, user: S.me });
-    clearTimeout(S.typingTimer);
-    S.typingTimer = setTimeout(() => S.socket.emit('typing-stop', { channelId: S.channel }), 2000);
-  }
+const msgInput=document.getElementById('msgInput');
+msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+msgInput.addEventListener('input', ()=>{
+  msgInput.style.height='auto'; msgInput.style.height=Math.min(msgInput.scrollHeight,140)+'px';
+  if(S.socket&&S.channel){ S.socket.emit('typing-start',{channelId:S.channel,user:S.me}); clearTimeout(S.typingTimer); S.typingTimer=setTimeout(()=>S.socket.emit('typing-stop',{channelId:S.channel}),2000); }
 });
-document.getElementById('taskInput').addEventListener('keydown', e => { if (e.key==='Enter') createTask(); });
-document.getElementById('newChName').addEventListener('keydown', e => { if (e.key==='Enter') createChannel(); });
-document.getElementById('channelModal').addEventListener('click', e => { if (e.target===e.currentTarget) closeModal(); });
+document.getElementById('taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter')createTask(); });
+document.getElementById('newChName').addEventListener('keydown',e=>{ if(e.key==='Enter')createChannel(); });
+document.getElementById('chModal').addEventListener('click',e=>{ if(e.target===e.currentTarget)closeChModal(); });
+document.getElementById('wfModal').addEventListener('click',e=>{ if(e.target===e.currentTarget)closeWfModal(); });
+document.getElementById('wfName').addEventListener('keydown',e=>{ if(e.key==='Escape')closeWfModal(); });
 
-function wrapText(wrap) {
-  const ta = document.getElementById('msgInput');
-  const s  = ta.selectionStart, e = ta.selectionEnd;
-  const sel = ta.value.slice(s,e) || 'text';
-  ta.value = ta.value.slice(0,s) + wrap + sel + wrap + ta.value.slice(e);
-  ta.focus();
-}
-function insertEmoji() {
-  const emojis = ['😊','🚀','✅','👍','🎉','🔥','💡','⚡'];
-  document.getElementById('msgInput').value += emojis[Math.floor(Math.random()*emojis.length)];
-  document.getElementById('msgInput').focus();
-}
+function wrapText(w) { const ta=document.getElementById('msgInput'),s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e)||'text'; ta.value=ta.value.slice(0,s)+w+sel+w+ta.value.slice(e); ta.focus(); }
+function insertEmoji() { const em=['😊','🚀','✅','👍','🎉','🔥','💡','⚡']; document.getElementById('msgInput').value+=em[Math.floor(Math.random()*em.length)]; document.getElementById('msgInput').focus(); }
 function scrollBottom() { const w=document.getElementById('messagesWrap'); w.scrollTop=w.scrollHeight; }
 
-// ── Initialise ────────────────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────────────────────────────
 async function init() {
-  document.getElementById('myName').textContent = S.me;
-  const av = document.getElementById('myAvatar');
-  av.textContent = initials(S.me);
-  av.style.background = avatarColor(S.me);
-
+  document.getElementById('myName').textContent=S.me;
+  const av=document.getElementById('myAvatar'); av.textContent=initials(S.me); av.style.background=avColor(S.me);
   try {
-    const [channels, messages, tasks, files] = await Promise.all([
-      api('/api/channels'),
-      api('/api/channels/general/messages'),
-      api('/api/tasks'),
-      api('/api/files'),
+    const [channels, messages, tasks, files, workflows] = await Promise.all([
+      api('/api/channels'), api('/api/channels/general/messages'),
+      api('/api/tasks'),    api('/api/files'), api('/api/workflows'),
     ]);
-    S.channels = channels;
-    S.tasks    = tasks;
-    S.files    = files;
-    renderSidebar();
-    messages.forEach(m => appendMsg(m, false));
-    scrollBottom();
-    renderTasks();
-    renderFiles();
+    S.channels=channels; S.tasks=tasks; S.files=files; S.workflows=workflows;
+    renderSidebar(); messages.forEach(m=>appendMsg(m,false)); scrollBottom();
+    renderTasks(); renderFiles(); renderWorkflows();
     initSocket();
-  } catch (err) {
-    console.error('Init failed:', err);
-    toast('Server unavailable — retrying in 4s…');
-    setTimeout(init, 4000);
+  } catch(err) {
+    console.error('Init failed:', err); toast('Server unavailable — retrying…');
+    setTimeout(init,4000);
   }
 }
 
