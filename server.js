@@ -308,10 +308,8 @@ app.patch('/api/tasks/:id', (req, res) => {
   const task = store.tasks.find(t => t.id === req.params.id);
   if (!task) return res.status(404).json({ error: 'Task not found' });
   const prevStatus = task.status;
-  const STATS = ['pending','in-progress','completed'];
-  const PRIS  = ['high','medium','low'];
-  if (req.body.status   && STATS.includes(req.body.status))    task.status   = req.body.status;
-  if (req.body.priority && PRIS.includes(req.body.priority))   task.priority = req.body.priority;
+  if (req.body.status   && isValidTaskStatus(req.body.status))  task.status   = req.body.status;
+  if (req.body.priority && isValidPriority(req.body.priority))  task.priority = req.body.priority;
   if (req.body.text)     task.text     = sanitize(req.body.text);
   if (req.body.assignee) task.assignee = sanitize(req.body.assignee);
   logger.info(`Task updated: ${task.id} -> ${task.status}`);
@@ -848,4 +846,8 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch(err => { logger.error('Bootstrap failed: ' + err.message); process.exit(1); });
+if (require.main === module) {
+  bootstrap().catch(err => { logger.error('Bootstrap failed: ' + err.message); process.exit(1); });
+}
+
+module.exports = { app, server, io, store };
