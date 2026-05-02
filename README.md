@@ -10,13 +10,14 @@ Colliq is a robust, secure, and AI-powered team collaboration tool designed to s
 - **Scalable Document Management**: Built to interface with Google Cloud Storage for persistent data durability.
 - **Operational Visibility**: Centralized logging via Google Cloud Logging for audit transparency.
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Innovation
 
-The platform follows a modern micro-monolith architecture:
+Colliq is more than a chat tool; it's an **Agentic Workspace**. For a deep dive into the technology stack, security hardening, and GCP integration, see the [ARCHITECTURAL_OVERVIEW.md](./ARCHITECTURAL_OVERVIEW.md).
 
-- **Frontend**: Single Page Application (SPA) using vanilla HTML5/CSS3/JS (refactorable to React) with a premium glassmorphic design system.
-- **Backend**: Node.js & Express server with real-time event handling via Socket.io.
-- **GCP Integrations**:
+### 🚀 Key Innovations
+- **Implicit Task Extraction**: Real-time identification of TODOs from chat.
+- **Contextual Synthesis**: Gemini-powered channel summaries.
+- **Stateless Resilience**: Optimized for Google Cloud Run with Secret Manager and Cloud Logging.
   - **Cloud Storage**: Used for persistent document and asset storage.
   - **Cloud Logging**: All system events and user actions are streamed to GCP for compliance.
   - **Secret Manager**: Sensitive API keys and service account credentials are retrieved at runtime.

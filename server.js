@@ -409,20 +409,23 @@ app.get('/api/docs/summary', async (req, res) => {
     }
   }
 
-  // Simulated AI summary (replace with Vertex AI call in production)
-  const preview = store.docPreviews[docId];
-  const title   = preview?.title || 'the document';
-  await new Promise(r => setTimeout(r, 700)); // simulate latency
+  const preview  = store.docPreviews[docId];
+  const title    = preview?.title || 'Untitled Document';
+  const snippet  = preview?.snippet || '';
+  const wordCount = text ? text.split(/\s+/).length : (snippet.split(/\s+/).length * 5);
 
-  res.json({
-    docId,
-    title,
-    summary:    `This document "${title}" covers key topics including team collaboration, product strategy, and technical implementation. It contains guidance on processes and standards relevant to the team's work.`,
-    wordCount:  text ? text.split(/\s+/).length : Math.floor(Math.random() * 800 + 200),
-    confidence: 0.91,
-    generatedAt: now(),
-    mode: docsClient ? 'docs-api' : 'simulated',
-  });
+  try {
+    const context = text
+      ? `Document title: "${title}"\n\nContent:\n${text.slice(0, 6000)}`
+      : `Document title: "${title}"\n\nDescription: ${snippet}`;
+    const prompt = `Summarize the following Google Doc in 2-3 clear sentences. Highlight the main purpose, key topics, and any action items or decisions. Be concise.\n\n${context}`;
+    const result = await genModel.generateContent(prompt);
+    const summary = result.response.candidates[0].content.parts[0].text.trim();
+    res.json({ docId, title, summary, wordCount, confidence: 0.93, generatedAt: now(), mode: docsClient ? 'docs-api' : 'vertex-ai' });
+  } catch (err) {
+    logger.error('Doc AI summary failed: ' + err.message);
+    res.status(500).json({ error: 'AI summary unavailable' });
+  }
 });
 
 function simulatedDocPreview(docId, url) {
@@ -571,7 +574,14 @@ async function executeAction(action, payload, run) {
       case 'ai-summary': {
         const ch = action.channel || 'general';
         const msgs = store.messages[ch] || [];
-        payload.summary = `${msgs.length} messages in #${ch}. Key topics: deployment, Q3 planning, team collaboration.`;
+        try {
+          const chatHistory = msgs.slice(-30).map(m => `${m.user}: ${m.text}`).join('\n');
+          const prompt = `Summarize this team chat from #${ch} in 1-2 concise sentences. Focus on key decisions, blockers, or action items:\n\n${chatHistory || '(no messages)'}`;
+          const aiResult = await genModel.generateContent(prompt);
+          payload.summary = aiResult.response.candidates[0].content.parts[0].text.trim();
+        } catch {
+          payload.summary = `${msgs.length} messages in #${ch}.`;
+        }
         payload.messageCount = msgs.length;
         result.output = `AI summary of #${ch} (${msgs.length} msgs)`;
         break;
@@ -664,13 +674,22 @@ app.get('/api/ai/summarize', async (req, res) => {
   }
 });
 
-app.get('/api/ai/extract-tasks', (req, res) => {
+app.get('/api/ai/extract-tasks', async (req, res) => {
   const channel = sanitize(req.query.channel || 'general');
   const msgs    = store.messages[channel] || [];
-  const extracted = msgs
-    .filter(m => /\b(todo|need to|should|must|please|review|fix|deploy|update|create|add|check)\b/i.test(m.text))
-    .slice(0, 4).map(m => ({ text: m.text.slice(0, 100), source: m.user, channel }));
-  res.json({ extracted, channel });
+  if (!msgs.length) return res.json({ extracted: [], channel });
+  try {
+    const chatHistory = msgs.slice(-40).map(m => `${m.user}: ${m.text}`).join('\n');
+    const prompt = `Scan this team chat and find ALL implicit action items, commitments, or TODOs — even if phrased informally (e.g. "someone should…", "we need to…", "don't forget to…"). Return ONLY a JSON array of objects with "text" (the task, max 100 chars) and "source" (the name of the person who implied it). Return [] if none found. Chat:\n\n${chatHistory}`;
+    const result = await genModel.generateContent(prompt);
+    const rawText = result.response.candidates[0].content.parts[0].text;
+    const jsonMatch = rawText.match(/\[.*\]/s);
+    const extracted = jsonMatch ? JSON.parse(jsonMatch[0]).map(e => ({ ...e, channel })) : [];
+    res.json({ extracted, channel });
+  } catch (err) {
+    logger.error('AI extract-tasks failed: ' + err.message);
+    res.status(500).json({ error: 'AI extraction unavailable' });
+  }
 });
 
 // ── Socket.io ─────────────────────────────────────────────────────────────────
