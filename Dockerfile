@@ -1,23 +1,25 @@
-# Use the official Node.js 20 image as the base image
-FROM node:20-slim
+# ── Build stage: install production deps ──────────────────────────────────────
+FROM node:20-slim AS deps
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install --production --no-audit --no-fund && npm cache clean --force
 
-# Set the working directory in the container
+# ── Runtime stage ─────────────────────────────────────────────────────────────
+FROM node:20-slim
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy installed modules from build stage (keeps final image lean)
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 
-# Install dependencies
-RUN npm install --production
-
-# Copy the rest of the application code
+# Copy application source
 COPY . .
 
-# Expose the port the app runs on
+# Cloud Run requires the app to bind on PORT (default 8080)
+ENV PORT=8080
+ENV NODE_ENV=production
+
+# Expose for documentation; Cloud Run uses PORT env var
 EXPOSE 8080
 
-# Define the environment variable for the port
-ENV PORT=8080
-
-# Command to run the application
-CMD [ "npm", "start" ]
+# Use node directly (avoids npm overhead; better signal handling)
+CMD [ "node", "server.js" ]

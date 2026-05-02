@@ -1,7 +1,7 @@
 {
-  "name": "agentic-team-collaboration-tool",
-  "version": "2.0.0",
-  "description": "Next-generation AI-powered Slack-like team collaboration platform on Google Cloud.",
+  "name": "colliq",
+  "version": "1.0.0",
+  "description": "Colliq: Next-generation AI-powered team collaboration platform on Google Cloud.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

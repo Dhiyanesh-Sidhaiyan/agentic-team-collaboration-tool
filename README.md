@@ -1,6 +1,6 @@
-# Antigravity: Next-Gen Agentic Collaboration Platform
+# Colliq: Next-Gen Collaboration Platform
 
-Antigravity is a robust, secure, and AI-powered team collaboration tool designed to streamline communication and task management using Google Cloud's enterprise-grade infrastructure.
+Colliq is a robust, secure, and AI-powered team collaboration tool designed to streamline communication and task management using Google Cloud's enterprise-grade infrastructure.
 
 ## 🚀 Key Features
 
