@@ -49,8 +49,19 @@ const logger = buildLogger();
 // ── GCP Clients ───────────────────────────────────────────────────────────────
 const storage      = new Storage({ projectId: PROJECT_ID });
 const secretClient = new SecretManagerServiceClient();
-const vertexAI     = new VertexAI({ project: PROJECT_ID, location: 'us-central1' });
-const genModel     = vertexAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+let vertexAI, genModel;
+try {
+  vertexAI = new VertexAI({ project: PROJECT_ID, location: 'us-central1' });
+  genModel = vertexAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+} catch (err) {
+  logger.warn('Vertex AI initialization failed — using simulation: ' + err.message);
+  genModel = {
+    generateContent: async (prompt) => {
+      logger.info('Simulated AI called for prompt: ' + prompt.slice(0, 50) + '...');
+      return { response: { candidates: [{ content: { parts: [{ text: '[Simulated AI Response] The Gemini API is currently unavailable.' }] } }] } };
+    }
+  };
+}
 
 async function getSecret(name) {
   try {
@@ -237,9 +248,10 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc:  ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       frameSrc:   ["'self'", "https://docs.google.com", "https://drive.google.com"],
       imgSrc:     ["'self'", "data:", "https://lh3.googleusercontent.com", "https://storage.googleapis.com"],
-      connectSrc: ["'self'", "wss:", "ws:"],
+      connectSrc: ["'self'", "wss:", "ws:", "*"],
     },
   },
 }));
