@@ -297,8 +297,7 @@ app.get('/api/tasks', (_req, res) => res.json(store.tasks));
 app.post('/api/tasks', (req, res) => {
   if (!validateString(req.body.text, 1, 500)) return res.status(400).json({ error: 'Task text must be between 1 and 500 characters' });
   const text = sanitize(req.body.text);
-  const PRIS = ['high','medium','low'];
-  const task = { id: mkId(), text, status: 'pending', priority: PRIS.includes(req.body.priority) ? req.body.priority : 'medium', assignee: sanitize(req.body.assignee || 'Unassigned'), channel: sanitize(req.body.channel || 'general'), created: now() };
+  const task = { id: mkId(), text, status: 'pending', priority: isValidPriority(req.body.priority) ? req.body.priority : 'medium', assignee: sanitize(req.body.assignee || 'Unassigned'), channel: sanitize(req.body.channel || 'general'), created: now() };
   store.tasks.push(task);
   logger.info(`Task created: ${task.text}`);
   io.emit('task-created', task);
