@@ -111,41 +111,7 @@ async function initGoogleAPIs() {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-const mkId   = () => crypto.randomUUID();
-const now    = () => new Date().toISOString();
-const sanitize = s => {
-  if (typeof s !== 'string') return '';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          .replace(/"/g,'&quot;').replace(/'/g,'&#x27;').trim().slice(0, 4000);
-};
-const avatarOf = name =>
-  String(name).split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-
-function extractDocId(url) {
-  const match = String(url).match(/\/(?:document|spreadsheets|presentation)\/d\/([a-zA-Z0-9_-]{10,})/);
-  return match ? match[1] : null;
-}
-
-const validateString = (val, min = 1, max = 255) => {
-  if (typeof val !== 'string') return false;
-  const trimmed = val.trim();
-  return trimmed.length >= min && trimmed.length <= max;
-};
-function extractSheetsId(url) {
-  const m = String(url).match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]{10,})/);
-  return m ? m[1] : null;
-}
-function detectGoogleUrl(text) {
-  const matches = String(text).match(/https?:\/\/docs\.google\.com\/[^\s"<>]+/g) || [];
-  return matches;
-}
-
-function interpolate(template, vars) {
-  return String(template).replace(/\{\{([\w.]+)\}\}/g, (_, key) => {
-    const val = key.split('.').reduce((o, k) => o?.[k], vars);
-    return val !== undefined ? String(val) : `{{${key}}}`;
-  });
-}
+// Pure helpers extracted to ./lib/validators.js for unit testing.
 
 // ── In-Memory Store ───────────────────────────────────────────────────────────
 const store = {
