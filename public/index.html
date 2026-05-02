@@ -1214,6 +1214,7 @@ async function switchChannel(id){
 function sendMessage(){
   const input=document.getElementById('msgInput'),text=input.value.trim();
   if(!text)return;
+  if(text.length > 4000){toast('Message too long (max 4000 chars)','error');return;}
   input.value='';input.style.height='auto';
   document.getElementById('sendBtn').disabled=true;
   setTimeout(()=>document.getElementById('sendBtn').disabled=!document.getElementById('msgInput').value,100);
@@ -1230,6 +1231,7 @@ function doReact(msgId,emoji){if(S.socket)S.socket.emit('add-reaction',{channelI
 async function createTask(){
   const input=document.getElementById('taskInput'),text=input.value.trim();
   if(!text)return;
+  if(text.length > 500){toast('Task too long (max 500 chars)','error');return;}
   input.value='';
   document.getElementById('taskInputRow').classList.add('hidden');
   const priority=document.getElementById('taskPriority').value||'medium';
@@ -1247,7 +1249,9 @@ function closeChModal(){document.getElementById('chModal').classList.add('hidden
 async function createChannel(){
   const name=document.getElementById('newChName').value.trim().toLowerCase().replace(/\s+/g,'-');
   const desc=document.getElementById('newChDesc').value.trim();
-  if(!name)return;
+  if(!name){toast('Channel name is required','error');return;}
+  if(name.length > 80){toast('Channel name too long (max 80 chars)','error');return;}
+  if(desc.length > 250){toast('Description too long (max 250 chars)','error');return;}
   try{await api('/api/channels',{method:'POST',body:JSON.stringify({name,description:desc})});closeChModal();toast('#'+name+' created','success');}
   catch(e){toast(e.message||'Channel already exists','error');}
 }

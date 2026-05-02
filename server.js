@@ -109,9 +109,15 @@ const avatarOf = name =>
   String(name).split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
 function extractDocId(url) {
-  const m = String(url).match(/\/document\/d\/([a-zA-Z0-9_-]{10,})/);
-  return m ? m[1] : null;
+  const match = String(url).match(/\/(?:document|spreadsheets|presentation)\/d\/([a-zA-Z0-9_-]{10,})/);
+  return match ? match[1] : null;
 }
+
+const validateString = (val, min = 1, max = 255) => {
+  if (typeof val !== 'string') return false;
+  const trimmed = val.trim();
+  return trimmed.length >= min && trimmed.length <= max;
+};
 function extractSheetsId(url) {
   const m = String(url).match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]{10,})/);
   return m ? m[1] : null;
@@ -278,9 +284,11 @@ app.get('/api/status', (_req, res) => res.json({
 // ── Channels ──────────────────────────────────────────────────────────────────
 app.get('/api/channels', (_req, res) => res.json(store.channels));
 app.post('/api/channels', (req, res) => {
-  const name = sanitize(req.body.name || '').toLowerCase().replace(/\s+/g, '-');
-  if (!name) return res.status(400).json({ error: 'Channel name required' });
+  if (!validateString(req.body.name, 1, 80)) return res.status(400).json({ error: 'Channel name must be between 1 and 80 characters' });
+  const name = sanitize(req.body.name).toLowerCase().replace(/\s+/g, '-');
   if (store.channels.find(c => c.name === name)) return res.status(409).json({ error: 'Channel already exists' });
+  if (req.body.description && !validateString(req.body.description, 0, 250)) return res.status(400).json({ error: 'Description too long (max 250)' });
+  
   const channel = { id: name, name, description: sanitize(req.body.description || ''), topic: '' };
   store.channels.push(channel);
   store.messages[channel.id] = [];
@@ -297,8 +305,8 @@ app.get('/api/channels/:id/messages', (req, res) => {
 });
 app.post('/api/channels/:id/messages', (req, res) => {
   if (!store.channels.find(c => c.id === req.params.id)) return res.status(404).json({ error: 'Channel not found' });
-  const text = sanitize(req.body.text || '');
-  if (!text) return res.status(400).json({ error: 'Message text required' });
+  if (!validateString(req.body.text, 1, 4000)) return res.status(400).json({ error: 'Message text must be between 1 and 4000 characters' });
+  const text = sanitize(req.body.text);
   const msg = { id: mkId(), user: sanitize(req.body.user || 'Anonymous'), avatar: avatarOf(req.body.user || 'Anonymous'), text, ts: now(), reactions: {} };
   store.messages[req.params.id].push(msg);
   io.to(req.params.id).emit('new-message', msg);
@@ -308,8 +316,8 @@ app.post('/api/channels/:id/messages', (req, res) => {
 // ── Tasks ─────────────────────────────────────────────────────────────────────
 app.get('/api/tasks', (_req, res) => res.json(store.tasks));
 app.post('/api/tasks', (req, res) => {
-  const text = sanitize(req.body.text || '');
-  if (!text) return res.status(400).json({ error: 'Task text required' });
+  if (!validateString(req.body.text, 1, 500)) return res.status(400).json({ error: 'Task text must be between 1 and 500 characters' });
+  const text = sanitize(req.body.text);
   const PRIS = ['high','medium','low'];
   const task = { id: mkId(), text, status: 'pending', priority: PRIS.includes(req.body.priority) ? req.body.priority : 'medium', assignee: sanitize(req.body.assignee || 'Unassigned'), channel: sanitize(req.body.channel || 'general'), created: now() };
   store.tasks.push(task);
