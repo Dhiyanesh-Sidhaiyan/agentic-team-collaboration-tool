@@ -17,12 +17,20 @@ function checkProjectQuality() {
     { name: 'Secret Manager', pattern: /SecretManagerServiceClient/, description: 'Secure key management' },
     { name: 'Real-time Socket', pattern: /new Server\(server/, description: 'Socket.io implementation' },
     { name: 'AI Integration', pattern: /\/api\/ai\/summarize/, description: 'AI API endpoint' },
-    { name: 'Task Management', pattern: /\/api\/tasks/, description: 'Tasks CRUD API' }
+    { name: 'Task Management', pattern: /\/api\/tasks/, description: 'Tasks CRUD API' },
+    { name: 'Backend Validation', pattern: /validateString/, description: 'Input validation on server' }
+  ];
+
+  const htmlPath = path.join(__dirname, 'public', 'index.html');
+  const htmlContent = fs.existsSync(htmlPath) ? fs.readFileSync(htmlPath, 'utf8') : '';
+  const frontendCriteria = [
+    { name: 'Frontend Validation', pattern: /text\.length >/, description: 'Input validation in UI' }
   ];
 
   let passed = 0;
-  criteria.forEach(c => {
-    if (c.pattern.test(serverContent)) {
+  [...criteria, ...frontendCriteria].forEach(c => {
+    const targetContent = criteria.includes(c) ? serverContent : htmlContent;
+    if (c.pattern.test(targetContent)) {
       console.log(`✅ [PASSED] ${c.name}: ${c.description}`);
       passed++;
     } else {
