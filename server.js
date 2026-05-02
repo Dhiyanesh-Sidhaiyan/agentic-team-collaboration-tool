@@ -13,6 +13,19 @@ const { Storage } = require('@google-cloud/storage');
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const { VertexAI } = require('@google-cloud/vertexai');
 const crypto     = require('crypto');
+const {
+  sanitize,
+  validateString,
+  avatarOf,
+  extractDocId,
+  extractSheetsId,
+  detectGoogleUrl,
+  interpolate,
+  isValidPriority,
+  isValidTaskStatus,
+  mkId,
+  now,
+} = require('./lib/validators');
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const PORT       = process.env.PORT || 8080;
