@@ -397,10 +397,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);di
       <h2 id="chName">general</h2>
       <span class="ch-topic" id="chTopic"></span>
       <div class="hdr-actions">
-        <button class="hbtn" id="hbtn-ai" onclick="doAiSummarize()">🤖 AI Summary</button>
-        <button class="hbtn" id="hbtn-docs" onclick="switchPanel('docs')">📄 Docs</button>
-        <button class="hbtn" id="hbtn-files" onclick="switchPanel('files')">📎 Files</button>
-        <button class="hbtn" id="hbtn-flows" onclick="switchPanel('flows')">⚙️ Flows</button>
+        <button class="hbtn" id="hbtn-ai" onclick="doAiSummarize()" aria-label="Generate AI summary of this channel">🤖 AI Summary</button>
+        <button class="hbtn" id="hbtn-docs" onclick="switchPanel('docs')" aria-label="View shared Google Docs">📄 Docs</button>
+        <button class="hbtn" id="hbtn-files" onclick="switchPanel('files')" aria-label="View shared files">📎 Files</button>
+        <button class="hbtn" id="hbtn-flows" onclick="switchPanel('flows')" aria-label="Manage team workflows">⚙️ Flows</button>
       </div>
     </header>
 
