@@ -43,10 +43,16 @@ A built-in event engine allows teams to define triggers (e.g., "Every weekday at
    ```bash
    npm start
    ```
-4. **Test**:
+4. **Test & Quality Checks**:
    ```bash
-   npm test
+   npm test          # Run security and integration audit
+   npm run lint      # Run ESLint checks
+   npm run format    # Auto-format code with Prettier
    ```
+
+## ⚖️ License
+This project is open-sourced under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
 
 ## 📝 Assumptions
 - The application assumes a Google Cloud Project with Vertex AI and Secret Manager APIs enabled.
