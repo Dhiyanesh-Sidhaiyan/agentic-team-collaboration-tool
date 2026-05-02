@@ -6,11 +6,19 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node audit.js"
+    "test": "node audit.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,json,html,css,md}\""
   },
   "engines": {
     "node": ">=18.0.0"
   },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+
   "dependencies": {
     "@google-cloud/logging": "^11.0.0",
     "@google-cloud/logging-winston": "^6.0.0",
