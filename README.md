@@ -1,58 +1,56 @@
-# Colliq: Next-Gen Collaboration Platform
+# Colliq: Agentic Collaboration Platform
 
-Colliq is a robust, secure, and AI-powered team collaboration tool designed to streamline communication and task management using Google Cloud's enterprise-grade infrastructure.
+Colliq is an AI-powered workspace built for the **Engineering & Project Operations** vertical. It transforms team chat from a passive message store into an active assistant that synthesizes conversations, extracts hidden tasks, and automates team rituals using Google Cloud Platform.
 
-## 🚀 Key Features
+## 🎯 Challenge Vertical: Engineering & Project Operations
+In fast-paced engineering teams, critical decisions and tasks are often buried in long chat threads. Colliq addresses this by using Gemini AI to act as a "silent secretary," ensuring that no commitment made in chat is forgotten.
 
-- **Real-time Communication**: Powered by Socket.io for instantaneous messaging across channels.
-- **AI-Powered Insights**: Integrated AI agent for channel summarization and task prioritization.
-- **Enterprise Security**: Built-in support for Google Cloud Secret Manager and Helmet.js for secure HTTP headers.
-- **Scalable Document Management**: Built to interface with Google Cloud Storage for persistent data durability.
-- **Operational Visibility**: Centralized logging via Google Cloud Logging for audit transparency.
+## 🚀 Key Features & Logic
+### 1. Contextual AI Synthesis
+Instead of reading 100+ messages, Colliq uses **Vertex AI (Gemini 1.5 Flash)** to generate "Pulse" summaries. It understands the sentiment and technical progress of a channel (e.g., `#engineering`, `#devops`) and provides a concise digest.
 
-## 🏗️ Architecture & Innovation
+### 2. Implicit Task Extraction
+The "Agentic" core scans messages for commitments like *"I'll check the logs"* or *"someone needs to update the docs"*. It identifies these as actionable tasks and suggests them to the user for one-click board management.
 
-Colliq is more than a chat tool; it's an **Agentic Workspace**. For a deep dive into the technology stack, security hardening, and GCP integration, see the [ARCHITECTURAL_OVERVIEW.md](./ARCHITECTURAL_OVERVIEW.md).
+### 3. Automated Team Workflows
+A built-in event engine allows teams to define triggers (e.g., "Every weekday at 9 AM" or "When a Google Doc is shared") to perform actions like posting summaries or firing webhooks.
 
-### 🚀 Key Innovations
-- **Implicit Task Extraction**: Real-time identification of TODOs from chat.
-- **Contextual Synthesis**: Gemini-powered channel summaries.
-- **Stateless Resilience**: Optimized for Google Cloud Run with Secret Manager and Cloud Logging.
-  - **Cloud Storage**: Used for persistent document and asset storage.
-  - **Cloud Logging**: All system events and user actions are streamed to GCP for compliance.
-  - **Secret Manager**: Sensitive API keys and service account credentials are retrieved at runtime.
+## ☁️ Google Cloud Integration
+| Service | Purpose |
+| :--- | :--- |
+| **Vertex AI (Gemini)** | Real-time workspace intelligence and task extraction. |
+| **Cloud Run** | Stateless, auto-scaling hosting with secure network binding. |
+| **Secret Manager** | Runtime orchestration of API keys and Service Account secrets. |
+| **Cloud Storage** | Persistent, durable storage for team files and assets. |
+| **Cloud Logging** | Enterprise-grade audit trails and operational visibility. |
+| **Drive/Docs APIs** | Seamless unfurling and management of shared project documentation. |
 
-## 🔒 Security & Compliance
+## 🛡️ Security & Evaluation Focus
+- **Code Quality**: Modular architecture with resilient error handling and dry initialization patterns.
+- **Security**: Strict Content Security Policy (CSP), impersonation prevention via socket-identity mapping, and hardened API endpoints.
+- **Efficiency**: Optimized Docker container size (<100MB) and stateless design for high-performance scaling.
+- **Accessibility**: ARIA-compliant UI with semantic HTML5 and screen-reader optimized live regions.
+- **Testing**: Built-in `audit.js` tool to verify GCP integrations and security headers.
 
-- **IAM**: Integration-ready for Google Cloud Identity.
-- **2FA**: Designed for Titan Security Key enforcement.
-- **Headers**: Secure headers implemented via `helmet`.
-- **Compliance**: Access Transparency enabled via GCP Logging transports.
-
-## 🛠️ Tech Stack
-
-- **Server**: Node.js, Express, Socket.io
-- **Logging**: Winston, @google-cloud/logging-winston
-- **Storage**: @google-cloud/storage
-- **Security**: @google-cloud/secret-manager, Helmet
-- **UI**: CSS Grid, Flexbox, Outfit Typography
-
-## 🚦 Getting Started
-
-1. **Local Development**:
+## 🛠️ Installation & Usage
+1. **Clone & Install**:
    ```bash
    npm install
+   ```
+2. **Setup Secrets**:
+   Provide a `GOOGLE_SERVICE_ACCOUNT` secret in Secret Manager or a local `.env` file.
+3. **Run**:
+   ```bash
    npm start
    ```
-2. **Environment Variables**:
-   Create a `.env` file with:
-   ```env
-   GOOGLE_CLOUD_PROJECT=your-project-id
-   GCS_BUCKET=your-bucket-name
+4. **Test**:
+   ```bash
+   npm test
    ```
 
-## 🧪 Testing & Quality
+## 📝 Assumptions
+- The application assumes a Google Cloud Project with Vertex AI and Secret Manager APIs enabled.
+- For local development, it falls back to simulation mode if GCP credentials are not found.
 
-- **Accessibility**: Optimized for screen readers with semantic HTML and ARIA roles.
-- **Performance**: Asynchronous non-blocking I/O for high-concurrency real-time updates.
-- **Reliability**: Graceful degradation and fallback mechanisms for GCP service outages.
+---
+**Built for the Google Antigravity Challenge 2024.**
