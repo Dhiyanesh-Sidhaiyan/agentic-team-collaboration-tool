@@ -292,8 +292,10 @@
             <div class="logo">ANTIGRAVITY</div>
         </div>
         
-        <div class="sidebar-section">
-            <div class="section-title">Channels</div>
+            <div class="nav-item" onclick="switchView('tasks')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                Tasks
+            </div>
             <div class="nav-item active" onclick="switchChannel('general')">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
                 general
@@ -333,12 +335,25 @@
         </header>
 
         <div class="messages" id="message-container">
-            <!-- Messages will appear here -->
-            <div class="message">
-                <div class="avatar" style="background:var(--secondary)">S</div>
-                <div class="msg-content">
-                    <h4>System <span>10:30 AM</span></h4>
-                    <div class="msg-text">Welcome to the Antigravity Team Workspace. Connection established with Cloud Logging and Storage.</div>
+            <!-- Messages View -->
+            <div id="chat-view">
+                <div class="message">
+                    <div class="avatar" style="background:var(--secondary)">S</div>
+                    <div class="msg-content">
+                        <h4>System <span>10:30 AM</span></h4>
+                        <div class="msg-text">Welcome to the Antigravity Team Workspace. Connection established with Cloud Logging and Storage.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks View (Hidden by default) -->
+            <div id="tasks-view" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3>Team Tasks</h3>
+                    <button class="btn-ai" style="width: auto; margin-top: 0; padding: 0.5rem 1rem;" id="ai-suggest-tasks">AI Suggest Tasks</button>
+                </div>
+                <div id="task-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Tasks will appear here -->
                 </div>
             </div>
         </div>
@@ -381,11 +396,78 @@
     <script>
         const socket = io();
         const msgContainer = document.getElementById('message-container');
+        const chatView = document.getElementById('chat-view');
+        const tasksView = document.getElementById('tasks-view');
+        const taskList = document.getElementById('task-list');
         const msgInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
         const summarizeBtn = document.getElementById('summarize-btn');
+        const suggestTasksBtn = document.getElementById('ai-suggest-tasks');
         const currentChannelText = document.getElementById('current-channel');
         let currentChannel = 'general';
+
+        // View Switching
+        function switchView(view) {
+            if (view === 'tasks') {
+                chatView.style.display = 'none';
+                tasksView.style.display = 'block';
+                currentChannelText.textContent = 'Tasks';
+                loadTasks();
+            } else {
+                chatView.style.display = 'block';
+                tasksView.style.display = 'none';
+                currentChannelText.textContent = '#' + currentChannel;
+            }
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // Task Logic
+        async function loadTasks() {
+            const res = await fetch('/api/tasks');
+            const tasks = await res.json();
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = 'ai-card';
+                div.style.marginBottom = '0.5rem';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} onchange="toggleTask(${task.id}, this.checked)">
+                        <span style="${task.status === 'completed' ? 'text-decoration: line-through; color: var(--text-dim)' : ''}">${task.text}</span>
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">${task.status}</span>
+                `;
+                taskList.appendChild(div);
+            });
+        }
+
+        async function toggleTask(id, checked) {
+            await fetch(`/api/tasks/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: checked ? 'completed' : 'pending' })
+            });
+            loadTasks();
+        }
+
+        suggestTasksBtn.addEventListener('click', async () => {
+            suggestTasksBtn.textContent = 'Analyzing...';
+            const res = await fetch('/api/ai/suggest-tasks');
+            const suggestions = await res.json();
+            for (const s of suggestions) {
+                await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: `[AI] ${s.text}` })
+                });
+            }
+            suggestTasksBtn.textContent = 'AI Suggest Tasks';
+            loadTasks();
+        });
 
         // Socket logic
         socket.emit('join', currentChannel);

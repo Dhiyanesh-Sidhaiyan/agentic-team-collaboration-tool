@@ -61,7 +61,35 @@ async function getSecret(secretName) {
   }
 }
 
+// --- Mock Data ---
+let tasks = [
+  { id: 1, text: 'Finalize Cloud Run deployment', status: 'pending' },
+  { id: 2, text: 'Integrate Titan Security Key policy', status: 'completed' }
+];
+
 // --- API Endpoints ---
+
+// Tasks CRUD
+app.get('/api/tasks', (req, res) => {
+  res.json(tasks);
+});
+
+app.post('/api/tasks', (req, res) => {
+  const newTask = { id: tasks.length + 1, text: req.body.text, status: 'pending' };
+  tasks.push(newTask);
+  logger.info(`New task created: ${newTask.text}`);
+  res.status(201).json(newTask);
+});
+
+app.patch('/api/tasks/:id', (req, res) => {
+  const task = tasks.find(t => t.id === parseInt(req.params.id));
+  if (task) {
+    task.status = req.body.status || task.status;
+    res.json(task);
+  } else {
+    res.status(404).json({ error: 'Task not found' });
+  }
+});
 
 // Status & Health
 app.get('/api/status', (req, res) => {
@@ -79,7 +107,18 @@ app.post('/api/upload', async (req, res) => {
   res.json({ message: 'Upload simulation successful. In production, files are saved to GCS.' });
 });
 
-// AI Insights Simulation
+// AI Task Suggestions
+app.get('/api/ai/suggest-tasks', async (req, res) => {
+  logger.info('AI Task Suggestions requested');
+  
+  // Simulate AI extraction from chat history
+  setTimeout(() => {
+    res.json([
+      { text: 'Review PR for GCS integration', priority: 'high' },
+      { text: 'Schedule team sync for Q3 planning', priority: 'medium' }
+    ]);
+  }, 800);
+});
 app.get('/api/ai/summarize', async (req, res) => {
   const channel = req.query.channel || 'general';
   logger.info(`AI Summary requested for #${channel}`);

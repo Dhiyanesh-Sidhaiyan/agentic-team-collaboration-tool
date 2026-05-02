@@ -16,7 +16,8 @@ function checkProjectQuality() {
     { name: 'Cloud Storage', pattern: /new Storage\(/, description: 'GCP Storage integration' },
     { name: 'Secret Manager', pattern: /SecretManagerServiceClient/, description: 'Secure key management' },
     { name: 'Real-time Socket', pattern: /new Server\(server/, description: 'Socket.io implementation' },
-    { name: 'AI Integration', pattern: /\/api\/ai\/summarize/, description: 'AI API endpoint' }
+    { name: 'AI Integration', pattern: /\/api\/ai\/summarize/, description: 'AI API endpoint' },
+    { name: 'Task Management', pattern: /\/api\/tasks/, description: 'Tasks CRUD API' }
   ];
 
   let passed = 0;
