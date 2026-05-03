@@ -347,6 +347,52 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);di
 .loading-skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:skeleton 1.5s infinite;border-radius:4px}
 @keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .empty-state{text-align:center;padding:32px 16px;color:var(--muted)}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+.sidebar{position:fixed;left:-248px;z-index:40;height:100%;transition:left .25s;box-shadow:0 0 40px rgba(0,0,0,.5)}
+.sidebar.mobile-open{left:0}
+.topbar-logo{min-width:auto;flex-shrink:0}
+.topbar-logo em{display:none}
+.topbar-search{max-width:220px}
+.topbar-right{gap:6px}
+.right-panel{position:fixed;right:-312px;z-index:40;height:100%;top:48px;transition:right .25s;box-shadow:0 0 40px rgba(0,0,0,.5)}
+.right-panel.mobile-open{right:0}
+.ch-header{padding:0 12px}
+.ch-topic{display:none}
+.hdr-actions{gap:2px}
+.hbtn{padding:0 8px;font-size:11px}
+.messages-wrap{padding:8px 0 4px}
+.msg-row{padding:5px 12px}
+.composer{padding:0 12px 12px}
+.modal{width:calc(100vw - 24px);margin:12px}
+.ch-modal{width:calc(100vw - 32px)}
+.trigger-grid{grid-template-columns:1fr}
+.toast-wrap{bottom:12px;right:12px;left:12px}
+.toast{max-width:100%}
+}
+@media(max-width:480px){
+.topbar{padding:0 10px;gap:8px}
+.topbar-search{max-width:140px}
+.topbar-search input{font-size:12px;padding:0 10px 0 28px}
+.status-pill{font-size:10px;padding:2px 7px}
+.hbtn{font-size:10px;padding:0 6px}
+.msg-av{width:28px;height:28px;font-size:11px}
+.msg-user{font-size:13px}
+.msg-text{font-size:13px}
+.doc-card{padding:8px 10px}
+.composer-toolbar{padding:5px 8px}
+.tbtn{width:26px;height:25px}
+.composer-input{padding:8px 10px;font-size:13px}
+.send-btn{height:28px;padding:0 12px;font-size:12px}
+}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:35;animation:fadein .2s ease}
+.mobile-overlay.show{display:block}
+.menu-toggle{display:none;width:32px;height:32px;border:none;background:rgba(255,255,255,.1);border-radius:6px;cursor:pointer;align-items:center;justify-content:center;color:#fff;font-size:18px;transition:background .15s}
+.menu-toggle:hover{background:rgba(255,255,255,.15)}
+@media(max-width:768px){
+.menu-toggle{display:flex}
+}
 .empty-state .es-icon{font-size:36px;margin-bottom:10px;opacity:.5}
 .empty-state p{font-size:13px;line-height:1.5}
 </style>
@@ -355,6 +401,7 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);di
 
 <!-- Top Bar -->
 <div class="topbar" role="banner">
+  <button class="menu-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
   <div class="topbar-logo"><div class="logo-icon">⚡</div>Colliq <em>v2</em></div>
   <div class="topbar-search">
     <input type="search" id="globalSearch" placeholder="Search messages, tasks, docs…" aria-label="Search workspace" autocomplete="off"/>
@@ -362,12 +409,15 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);di
   </div>
   <div class="topbar-right">
     <div class="status-pill"><div class="status-dot off" id="sDot"></div><span id="sText">Connecting…</span></div>
+    <button class="menu-toggle" id="panelToggle" aria-label="Toggle panel">≡</button>
   </div>
 </div>
 
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
 <div class="workspace">
   <!-- Sidebar -->
-  <nav class="sidebar" role="navigation" aria-label="Workspace navigation">
+  <nav class="sidebar" id="sidebar" role="navigation" aria-label="Workspace navigation">
     <div class="sb-scroll">
       <div class="sb-sec">
         <div class="sb-sec-hdr">
@@ -439,7 +489,7 @@ body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);di
   </main>
 
   <!-- Right Panel -->
-  <aside class="right-panel" role="complementary" aria-label="Workspace tools">
+  <aside class="right-panel" id="rightPanel" role="complementary" aria-label="Workspace tools">
     <div class="rp-tabs" role="tablist">
       <button class="rp-tab active" id="tab-tasks"  role="tab" aria-selected="true"  onclick="switchPanel('tasks')">📋 Tasks</button>
       <button class="rp-tab"        id="tab-ai"     role="tab" aria-selected="false" onclick="switchPanel('ai')">🤖 AI</button>
@@ -1291,6 +1341,22 @@ function switchPanel(p){
   if(p==='flows')renderWorkflows();
   if(p==='files')renderFiles();
 }
+
+// Mobile menu toggles
+const sidebar=document.getElementById('sidebar'),rightPanel=document.getElementById('rightPanel'),overlay=document.getElementById('mobileOverlay');
+document.getElementById('sidebarToggle').addEventListener('click',()=>{
+  const isOpen=sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('show',isOpen||rightPanel.classList.contains('mobile-open'));
+});
+document.getElementById('panelToggle').addEventListener('click',()=>{
+  const isOpen=rightPanel.classList.toggle('mobile-open');
+  overlay.classList.toggle('show',isOpen||sidebar.classList.contains('mobile-open'));
+});
+overlay.addEventListener('click',()=>{
+  sidebar.classList.remove('mobile-open');
+  rightPanel.classList.remove('mobile-open');
+  overlay.classList.remove('show');
+});
 
 // Composer
 const msgInput=document.getElementById('msgInput');
